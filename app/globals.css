@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --corporate-navy: #0f172a;
+  --corporate-blue: #2563eb;
+  --corporate-gray: #f8fafc;
+}
+
+body {
+  background-color: var(--corporate-gray);
+  color: var(--corporate-navy);
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 1.2s ease-out forwards;
+}
