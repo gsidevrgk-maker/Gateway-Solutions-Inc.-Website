@@ -1,19 +1,23 @@
 import './globals.css';
 import Navbar from '../components/Navbar';
-import ParticleBackground from '../components/ParticleBackground';
+// We will update the ParticleBackground to a light theme in the next step
+import ParticleBackground from '../components/ParticleBackground'; 
 
 export const metadata = {
   title: 'Gateway Solutions, Inc.',
-  description: 'IT Consulting Services and Software Solutions',
+  description: 'Enterprise IT Consulting and Staffing Solutions',
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="text-slate-200 antialiased selection:bg-blue-500 selection:text-white">
+      {/* Changed background to a clean slate-50 and text to dark slate-900 */}
+      <body className="bg-slate-50 text-slate-900 selection:bg-blue-200 selection:text-blue-900 min-h-screen flex flex-col">
         <ParticleBackground />
         <Navbar />
-        <main className="pt-24 min-h-screen">{children}</main>
+        <main className="relative z-10 flex-grow">
+          {children}
+        </main>
       </body>
     </html>
   );
