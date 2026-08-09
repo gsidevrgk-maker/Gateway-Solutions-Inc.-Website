@@ -12,14 +12,16 @@ export default function StaffingPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-20 mt-12">
+      
+      {/* Header Section - Text colors updated to slate-900 and slate-600 for visibility */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
-        <h1 className="text-5xl font-extrabold text-white mb-6">Staffing <span className="text-blue-500">Solutions</span></h1>
-        <p className="text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
+        <h1 className="text-5xl font-extrabold text-slate-900 mb-6">Staffing <span className="text-blue-600">Solutions</span></h1>
+        <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-medium">
           Gateway Solutions serves as a critical strategic partner, offering flexible, value-added outsourcing of staff augmentation services across the United States.
         </p>
       </motion.div>
 
-      {/* Engagement Models Grid */}
+      {/* Engagement Models Grid - Dark Cards with Light Text */}
       <div className="grid md:grid-cols-2 gap-8 mb-24">
         {models.map((model, idx) => {
           const Icon = model.icon;
@@ -29,26 +31,23 @@ export default function StaffingPage() {
               initial={{ opacity: 0, x: idx % 2 === 0 ? -30 : 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-slate-900/80 p-10 rounded-3xl border border-slate-700 hover:border-blue-500/50 transition-all duration-300 backdrop-blur-sm flex items-start gap-6"
+              className="bg-slate-900 p-10 rounded-3xl border border-slate-800 hover:border-blue-500/50 shadow-xl transition-all duration-300 flex items-start gap-6"
             >
-              <div className="w-14 h-14 bg-blue-950/50 rounded-2xl flex items-center justify-center border border-blue-900/50 flex-shrink-0">
+              <div className="w-14 h-14 bg-blue-900/30 rounded-2xl flex items-center justify-center border border-blue-800/50 flex-shrink-0">
                 <Icon className="w-7 h-7 text-blue-400" />
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-white mb-3">{model.title}</h3>
-                <p className="text-slate-400 leading-relaxed text-sm">{model.desc}</p>
+                <p className="text-slate-300 leading-relaxed text-sm">{model.desc}</p>
               </div>
             </motion.div>
           )
         })}
       </div>
 
-      {/* The Gateway Guarantees */}
+      {/* The Gateway Guarantees - Dark Cards with Light Text */}
       <div className="grid lg:grid-cols-2 gap-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="bg-gradient-to-br from-slate-900/90 to-blue-950/40 p-10 rounded-3xl border border-blue-500/30 backdrop-blur-sm"
-        >
+        <motion.div className="bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-xl">
           <Shield className="w-12 h-12 text-blue-400 mb-6" />
           <h3 className="text-2xl font-bold text-white mb-4">Security Cleared Talent</h3>
           <p className="text-slate-300 leading-relaxed">
@@ -56,10 +55,7 @@ export default function StaffingPage() {
           </p>
         </motion.div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-          className="bg-gradient-to-br from-slate-900/90 to-blue-950/40 p-10 rounded-3xl border border-blue-500/30 backdrop-blur-sm"
-        >
+        <motion.div className="bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-xl">
           <Award className="w-12 h-12 text-blue-400 mb-6" />
           <h3 className="text-2xl font-bold text-white mb-4">The Performance Guarantee</h3>
           <p className="text-slate-300 leading-relaxed">
@@ -67,7 +63,6 @@ export default function StaffingPage() {
           </p>
         </motion.div>
       </div>
-
     </div>
   );
 }
