@@ -1,7 +1,7 @@
 import './globals.css';
 import Navbar from '../components/Navbar';
 import ParticleBackground from '../components/ParticleBackground';
-import BackgroundVideo from '../components/BackgroundVideo'; // Import your new component
+import BackgroundVideo from '../components/BackgroundVideo';
 
 export const metadata = {
   title: 'Gateway Solutions, Inc.',
@@ -11,8 +11,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-slate-50 text-slate-900 selection:bg-blue-200 selection:text-blue-900 min-h-screen flex flex-col relative">
-        {/* Global Background Elements */}
+      {/* Removed bg-slate-50 so the video background shines through */}
+      <body className="text-slate-900 selection:bg-blue-200 selection:text-blue-900 min-h-screen flex flex-col relative">
         <BackgroundVideo />
         <ParticleBackground />
         

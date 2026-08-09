@@ -1,8 +1,21 @@
 "use client";
+import { useEffect, useRef } from 'react';
+
 export default function BackgroundVideo() {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch((error) => {
+        console.log("Autoplay was prevented:", error);
+      });
+    }
+  }, []);
+
   return (
-    <div className="fixed inset-0 -z-30 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
@@ -10,14 +23,12 @@ export default function BackgroundVideo() {
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover opacity-60"
       >
-        {/* Using a reliable high-speed public MP4 stream for StackBlitz preview testing */}
         <source src="https://assets.mixkit.co/videos/preview/mixkit-modern-office-space-with-computers-41687-large.mp4" type="video/mp4" />
-        {/* Fallback to local file for production on Vercel */}
         <source src="/office-bg.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      {/* Light overlay to keep text crisp */}
-      <div className="absolute inset-0 bg-slate-50/40 backdrop-blur-[0.5px]" />
+      {/* Light corporate overlay to keep text fully readable */}
+      <div className="absolute inset-0 bg-slate-50/50 backdrop-blur-[0.5px]" />
     </div>
   );
 }
