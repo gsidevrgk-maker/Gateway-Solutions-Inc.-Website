@@ -1,12 +1,12 @@
 "use client";
 import { motion } from 'framer-motion';
-import { Landmark, HeartPulse, Building2, Wifi, MonitorPlay, ShieldCheck, ShoppingCart, Landmark as Bank } from 'lucide-react';
+import { Landmark, HeartPulse, Building2, Wifi, MonitorPlay, ShieldCheck, ShoppingCart, CreditCard } from 'lucide-react';
 
 export default function IndustriesPage() {
   const industries = [
     { icon: Landmark, title: "Public Sector & Government", desc: "Delivering cleared talent and IT solutions for State, Local, and Federal agencies." },
     { icon: HeartPulse, title: "Healthcare & Pharmaceutical", desc: "Providing compliant data systems and IT staffing for major medical and pharma enterprises." },
-    { icon: Bank, title: "Finance & Insurance", desc: "Deploying secure fintech, data warehousing, and banking software analysts." },
+    { icon: CreditCard, title: "Finance & Insurance", desc: "Deploying secure fintech, data warehousing, and banking software analysts." },
     { icon: Wifi, title: "Telecommunications", desc: "Supporting network administration and high-bandwidth infrastructure overhauls." },
     { icon: ShoppingCart, title: "Consumer Products & E-Commerce", desc: "Building scalable retail platforms and seamless digital payment integrations." },
     { icon: MonitorPlay, title: "Entertainment & Media", desc: "Empowering content delivery networks and interactive web platforms." },
