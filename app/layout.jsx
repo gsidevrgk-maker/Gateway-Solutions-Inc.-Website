@@ -1,6 +1,5 @@
 import './globals.css';
 import Navbar from '../components/Navbar';
-// We will update the ParticleBackground to a light theme in the next step
 import ParticleBackground from '../components/ParticleBackground'; 
 
 export const metadata = {
@@ -11,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      {/* Changed background to a clean slate-50 and text to dark slate-900 */}
+      {/* Forces a light background and dark text globally */}
       <body className="bg-slate-50 text-slate-900 selection:bg-blue-200 selection:text-blue-900 min-h-screen flex flex-col">
         <ParticleBackground />
         <Navbar />
