@@ -141,7 +141,7 @@ export default function CareersPage() {
   // --- AUTOMATED EMAIL DISPATCH VIA EMAILJS ---
   async function processApplication(user, job) {
     try {
-      const serviceID = 'service_kae19';
+      const serviceID = 'service_kae19xl';
       const templateID = 'template_avqlh';
       const publicKey = 'L_4sEBwSjARFZtehc';
 
