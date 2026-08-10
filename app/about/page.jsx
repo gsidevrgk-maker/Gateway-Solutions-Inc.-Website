@@ -78,7 +78,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold text-slate-900 mb-6 border-l-4 border-amber-500 pl-4">Our Methodology</h2>
           <div className="space-y-4">
             {methodologies.map((m, idx) => (
-/home/gsidevrgk-maker/Gateway-Solutions-Inc.-Website/app/clients              <div key={idx} className="flex gap-4 group">
+              <div key={idx} className="flex gap-4 group">
                 <div className="flex-shrink-0 mt-1">
                   <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center border border-amber-300/60">
                     <span className="text-amber-800 text-sm font-bold">{idx + 1}</span>
