@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Briefcase, MapPin, Clock, X, ChevronRight, User, Loader2, Lock, LogOut, Edit, Trash2, Plus, Mail } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import emailjs from '@emailjs/browser';
 
 export default function CareersPage() {
   const [jobs, setJobs] = useState([]);
@@ -25,7 +26,19 @@ export default function CareersPage() {
 
   useEffect(() => {
     fetchJobs();
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+    
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      
+      // Check if candidate just returned from Google OAuth login with a pending application
+      const pendingJobStr = localStorage.getItem('pendingApplication');
+      if (session && session.user && pendingJobStr) {
+        if (session.user.app_metadata.provider === 'google') {
+          processApplication(session.user, JSON.parse(pendingJobStr));
+        }
+      }
+    });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
     return () => subscription.unsubscribe();
   }, []);
@@ -37,7 +50,6 @@ export default function CareersPage() {
     if (error) {
       console.error("Fetch error:", error);
     } else if (data) {
-      // Map database lowercase columns back to React camelCase state
       const mappedJobs = data.map(job => ({
         ...job,
         contactName: job.contactname || job.contactName,
@@ -79,7 +91,6 @@ export default function CareersPage() {
   async function handleSaveJob(e) {
     e.preventDefault();
     
-    // Format the payload to match Postgres strictly lowercase columns
     const jobData = {
       title: formData.title,
       location: formData.location,
@@ -87,22 +98,16 @@ export default function CareersPage() {
       desc: formData.desc,
       responsibilities: formData.responsibilities.split('\n').filter(line => line.trim() !== ''),
       requirements: formData.requirements.split('\n').filter(line => line.trim() !== ''),
-      contactname: formData.contactName,   // Mapped to lowercase for DB
-      contactemail: formData.contactEmail  // Mapped to lowercase for DB
+      contactname: formData.contactName,
+      contactemail: formData.contactEmail
     };
 
     if (editingJob) {
       const { error } = await supabase.from('jobs').update(jobData).eq('id', editingJob.id);
-      if (error) {
-        alert("Failed to update: " + error.message);
-        return;
-      }
+      if (error) { alert("Failed to update: " + error.message); return; }
     } else {
       const { error } = await supabase.from('jobs').insert([jobData]);
-      if (error) {
-        alert("Failed to save: " + error.message);
-        return;
-      }
+      if (error) { alert("Failed to save: " + error.message); return; }
     }
     
     setShowForm(false);
@@ -118,13 +123,47 @@ export default function CareersPage() {
     }
   }
 
-  // --- PUBLIC APPLY FLOW ---
+  // --- PUBLIC APPLY FLOW VIA GOOGLE OAUTH ---
   async function handleApplyWithGoogle() {
+    localStorage.setItem('pendingApplication', JSON.stringify(selectedJob));
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/careers` }
     });
-    if (error) alert("Error connecting to Google.");
+    
+    if (error) {
+      alert("Error connecting to Google.");
+      localStorage.removeItem('pendingApplication');
+    }
+  }
+
+  // --- AUTOMATED EMAIL DISPATCH VIA EMAILJS ---
+  async function processApplication(user, job) {
+    try {
+      const serviceID = 'service_kae19';
+      const templateID = 'template_avqlh';
+      const publicKey = 'L_4sEBwSjARFZtehc';
+
+      const templateParams = {
+        hiring_manager: job.contactName,
+        job_title: job.title,
+        applicant_name: user.user_metadata.full_name || "Applicant",
+        applicant_email: user.email,
+        to_email: job.contactEmail // The hidden manager email stored in Supabase
+      };
+
+      await emailjs.send(serviceID, templateID, templateParams, publicKey);
+      
+      alert(`Success! Your application for ${job.title} has been securely sent to the hiring manager.`);
+    } catch (error) {
+      console.error("Failed to send application:", error);
+      alert("There was an issue sending your application. Please try again.");
+    } finally {
+      localStorage.removeItem('pendingApplication');
+      await supabase.auth.signOut();
+      setSelectedJob(null);
+    }
   }
 
   return (
@@ -135,7 +174,6 @@ export default function CareersPage() {
         <h1 className="text-5xl font-extrabold text-slate-900 mb-6 flex items-center justify-center gap-4">
           Join Our <span className="text-amber-600">Team</span>
           
-          {/* Admin Lock / Logout Icons */}
           {!session ? (
             <button onClick={() => setShowLogin(true)} className="p-3 bg-white/80 hover:bg-amber-100 rounded-full transition-colors group shadow-sm border border-slate-200 ml-2" title="Admin Login">
               <Lock className="w-6 h-6 text-slate-400 group-hover:text-amber-600 transition-colors" />
@@ -150,7 +188,6 @@ export default function CareersPage() {
           Gateway Solutions is always looking for elite talent. Explore our open positions and become part of a workforce that drives enterprise technology forward.
         </p>
 
-        {/* Admin "Add Job" Button */}
         {session && (
           <motion.button 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -176,7 +213,6 @@ export default function CareersPage() {
               onClick={() => setSelectedJob(job)}
               className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl cursor-pointer group hover:scale-[1.02] transition-all duration-300 flex flex-col h-full relative"
             >
-              {/* Admin Controls on Card */}
               {session && (
                 <div className="absolute top-4 right-4 flex gap-2 z-10">
                   <button onClick={(e) => { e.stopPropagation(); openForm(job); }} className="p-2 bg-white/60 hover:bg-white rounded-full text-blue-600 shadow-sm transition"><Edit className="w-4 h-4" /></button>
