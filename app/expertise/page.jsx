@@ -1,58 +1,75 @@
-"use client";
+'use client';
 import { motion } from 'framer-motion';
-import { Cloud, Cpu, Database, ShieldAlert, Settings, Smartphone, Layers, Code } from 'lucide-react';
 
 export default function ExpertisePage() {
-  const techMatrix = [
-    { icon: Cloud, title: "Cloud & Infrastructure", desc: "Scalable, highly available environments built for enterprise demands.", tags: ["AWS", "Azure", "GCP", "Kubernetes", "Docker", "Terraform"] },
-    { icon: Cpu, title: "Artificial Intelligence & ML", desc: "Advanced algorithmic models driving predictive insights and automation.", tags: ["Python", "TensorFlow", "PyTorch", "OpenAI APIs", "Machine Learning"] },
-    { icon: Code, title: "Modern Frontend & UI/UX", desc: "High-performance, accessible, and responsive user interfaces.", tags: ["React.js", "Next.js", "Angular", "Vue.js", "Tailwind CSS"] },
-    { icon: Settings, title: "Backend & Middleware", desc: "Robust microservices and event-driven architectures.", tags: ["Node.js", "Java / Spring Boot", ".NET Core", "C#", "Python"] },
-    { icon: Database, title: "Data Engineering & Analytics", desc: "Massive data pipelines, warehousing, and business intelligence.", tags: ["Snowflake", "Databricks", "Informatica", "Oracle 11g/19c", "SQL Server"] },
-    { icon: ShieldAlert, title: "Cybersecurity & InfoSec", desc: "Zero-trust implementations and rigorous vulnerability management.", tags: ["Zero Trust", "IAM", "CyberArk", "Splunk", "Penetration Testing"] },
-    { icon: Layers, title: "ERP, CRM & Enterprise Apps", desc: "Seamless integration and customization of global business systems.", tags: ["SAP S/4HANA", "Salesforce", "Oracle ERP", "Workday"] },
-    { icon: Smartphone, title: "Mobile Development", desc: "Native and cross-platform applications for a mobile-first workforce.", tags: ["React Native", "Flutter", "Swift (iOS)", "Kotlin (Android)"] }
+  const domains = [
+    {
+      title: 'Modern Web & UI/UX',
+      items:
+        'React, Next.js, Tailwind CSS, HTML5/DHTML, JavaScript, ASP.NET, WebSphere, and interactive application design.',
+    },
+    {
+      title: 'ERP, CRM & Enterprise Apps',
+      items:
+        'SAP, Oracle ERP, PeopleSoft, Great Plains, JD Edwards, Siebel, Vantive, Clarify, and Vitria.',
+    },
+    {
+      title: 'Data Integration (ETL & EDI)',
+      items:
+        'Informatica (PowerCenter, PowerMart, PowerConnect), DataStage, Microstrategy, EDI Mapping, B2B Integration, and CyberCash interfaces.',
+    },
+    {
+      title: 'Artificial Intelligence & Next-Gen',
+      items:
+        'Machine Learning models, AI-driven automation, predictive analytics, and advanced algorithmic data processing.',
+    },
+    {
+      title: 'Databases & Data Warehousing',
+      items:
+        'Oracle 10g/11i, MS SQL Server, Berkeley DB, PostgreSQL, MySQL, Informix, Business Objects, Cognos.',
+    },
+    {
+      title: 'Architectures, Cloud & Middleware',
+      items:
+        'Microsoft.NET, J2EE, Linux Kernel Architecture, TCP/IP Suite, BEA Weblogic, IBM WebSphere, MQSeries, and Unix/Linux platforms.',
+    },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 mt-12">
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-6">
-          Technology <span className="text-blue-600">Matrix</span>
+    <div className="max-w-7xl mx-auto px-6 py-20">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-center mb-16"
+      >
+        <h1 className="text-5xl font-bold text-white mb-6">
+          Technical <span className="text-blue-500">Expertise</span>
         </h1>
-        <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-medium">
-          Our talent acquisition and technical vetting protocols are mapped directly to the modern technology landscape. We deploy specialists who possess deep, tactical expertise across these critical enterprise domains.
+        <p className="text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
+          GSI IT consulting services provide experienced individuals with
+          expertise spanning legacy systems to the latest advancements in
+          Artificial Intelligence, React-based web development, SAP integration,
+          and complex ETL/EDI data pipelines.
         </p>
       </motion.div>
 
-      <div className="grid md:grid-cols-2 gap-8 mb-24">
-        {techMatrix.map((domain, idx) => {
-          const Icon = domain.icon;
-          return (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="bg-slate-900 p-8 rounded-3xl shadow-xl border border-slate-800 hover:border-blue-500/50 transition-all duration-300 group flex flex-col h-full"
-            >
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-blue-900/30 rounded-xl flex items-center justify-center border border-blue-800/50 group-hover:scale-110 transition-transform mr-4">
-                  <Icon className="w-6 h-6 text-blue-400" />
-                </div>
-                <h3 className="text-2xl font-bold text-white">{domain.title}</h3>
-              </div>
-              <p className="text-slate-300 text-sm mb-6 flex-grow">{domain.desc}</p>
-              <div className="flex flex-wrap gap-2">
-                {domain.tags.map((tag, i) => (
-                  <span key={i} className="bg-slate-800 text-blue-100 text-xs font-semibold px-3 py-1.5 rounded-md border border-slate-700">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          )
-        })}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {domains.map((domain, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="bg-slate-900/60 p-8 rounded-2xl border border-white/10 backdrop-blur-sm hover:bg-slate-800/80 transition-colors shadow-lg"
+          >
+            <h3 className="text-xl font-bold text-blue-400 mb-4">
+              {domain.title}
+            </h3>
+            <p className="text-slate-300 font-mono text-sm leading-relaxed">
+              {domain.items}
+            </p>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
