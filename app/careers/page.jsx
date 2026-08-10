@@ -99,7 +99,6 @@ export default function CareersPage() {
 
   // --- PUBLIC APPLY FLOW ---
   async function handleApplyWithGoogle() {
-    // Triggers Google OAuth. We will need to capture this event to send the email later!
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/careers` }
@@ -114,14 +113,15 @@ export default function CareersPage() {
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16 relative">
         <h1 className="text-5xl font-extrabold text-slate-900 mb-6 flex items-center justify-center gap-4">
           Join Our <span className="text-amber-600">Team</span>
-          {/* Subtle Admin Lock Icon */}
+          
+          {/* Admin Lock / Logout Icons - Highly Visible */}
           {!session ? (
-            <button onClick={() => setShowLogin(true)} className="p-2 hover:bg-amber-100 rounded-full transition-colors group">
-              <Lock className="w-5 h-5 text-amber-300 group-hover:text-amber-600" />
+            <button onClick={() => setShowLogin(true)} className="p-3 bg-white/80 hover:bg-amber-100 rounded-full transition-colors group shadow-sm border border-slate-200 ml-2" title="Admin Login">
+              <Lock className="w-6 h-6 text-slate-400 group-hover:text-amber-600 transition-colors" />
             </button>
           ) : (
-            <button onClick={handleLogout} className="p-2 hover:bg-amber-100 rounded-full transition-colors group" title="Logout">
-              <LogOut className="w-6 h-6 text-amber-600" />
+            <button onClick={handleLogout} className="p-3 bg-white/80 hover:bg-red-50 rounded-full transition-colors group shadow-sm border border-slate-200 ml-2" title="Logout">
+              <LogOut className="w-6 h-6 text-red-400 group-hover:text-red-600 transition-colors" />
             </button>
           )}
         </h1>
