@@ -142,7 +142,7 @@ export default function CareersPage() {
   async function processApplication(user, job) {
     try {
       const serviceID = 'service_kae19xl';
-      const templateID = 'template_avqlh';
+      const templateID = 'template_avqlhuc';
       const publicKey = 'L_4sEBwSjARFZtehc';
 
       const templateParams = {
