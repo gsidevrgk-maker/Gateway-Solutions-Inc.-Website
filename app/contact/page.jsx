@@ -1,141 +1,63 @@
-'use client';
+"use client";
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Printer, Mail, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Printer, Send, Building } from 'lucide-react';
 
 export default function ContactPage() {
-  const offices = [
-    {
-      name: 'Corporate Office',
-      address: '12980, Metcalf Ave., Suite 330, Overland Park, Kansas - 66213',
-      phone: '913-851-1055',
-      fax: '815-366-8259',
-    },
-    {
-      name: 'VA Office',
-      address: '44295, Pawnee Terrace, Ashburn, VA - 20147',
-      phone: '703-723-9747',
-      fax: '703-723-9748',
-    },
-    {
-      name: 'NC Office',
-      address: '133 Key bridge Drive, Suite F, Morrisville, NC 27560',
-      phone: '919-745-8123 x 1007',
-      fax: '815-366-8259',
-    },
+  const locations = [
+    { title: "Corporate Headquarters", state: "Kansas (KS)", address: "12980 Metcalf Ave, Suite 330, Overland Park, KS 66213", phone: "913-851-1055", fax: "913-535-2486", email: "HR@GatewaySI.com" },
+    { title: "Regional Office", state: "North Carolina (NC)", address: "Morrisville, NC", phone: "913-851-1055", fax: "913-535-2486", email: "HR@GatewaySI.com" },
+    { title: "Regional Office", state: "Virginia (VA)", address: "44295 Pawnee Terr, Ashburn, VA 20147", phone: "703-723-9747", fax: "815-366-8259", email: "vuyyuru@GatewaySI.com" }
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-16"
-      >
-        <h1 className="text-5xl font-bold text-white mb-6">
-          Get in <span className="text-blue-500">Touch</span>
-        </h1>
-        <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-          Gateway Solutions operates through a 24x7 Global service model. Reach
-          out to our corporate headquarters or regional offices to discover how
-          we can pioneer your next web solution.
+    <div className="max-w-7xl mx-auto px-6 py-20 mt-12">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
+        <h1 className="text-5xl font-extrabold text-slate-900 mb-6">Get in <span className="text-amber-600">Touch</span></h1>
+        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed font-medium">
+          Whether you are looking to augment your IT staff, embark on a major infrastructure modernization, or inquire about our consulting services, our strategists are ready to assist.
         </p>
       </motion.div>
 
-      <div className="grid lg:grid-cols-3 gap-12">
-        {/* Office Locations */}
-        <div className="lg:col-span-1 space-y-8">
-          {offices.map((office, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className="bg-slate-900/60 p-8 rounded-3xl border border-white/10 backdrop-blur-sm"
-            >
-              <h3 className="text-2xl font-bold text-blue-400 mb-4">
-                {office.name}
-              </h3>
-              <div className="space-y-4 text-slate-300 text-sm">
-                <p className="flex items-start">
-                  <MapPin className="w-5 h-5 mr-3 text-blue-500 flex-shrink-0 mt-0.5" />
-                  <span>{office.address}</span>
-                </p>
-                <p className="flex items-center">
-                  <Phone className="w-5 h-5 mr-3 text-blue-500 flex-shrink-0" />
-                  <span>{office.phone}</span>
-                </p>
-                <p className="flex items-center">
-                  <Printer className="w-5 h-5 mr-3 text-blue-500 flex-shrink-0" />
-                  <span>Fax: {office.fax}</span>
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Contact Form */}
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="lg:col-span-2 bg-slate-900/60 p-10 rounded-3xl border border-white/10 backdrop-blur-sm h-full"
-        >
-          <h2 className="text-3xl font-bold text-white mb-8">
-            Send an Inquiry
-          </h2>
-          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+      <div className="grid lg:grid-cols-5 gap-12">
+        <motion.div className="lg:col-span-3 bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-10 rounded-3xl shadow-xl border border-amber-300/60">
+          <h2 className="text-3xl font-bold text-slate-900 mb-8 border-l-4 border-amber-500 pl-4">Send an Inquiry</h2>
+          <form action="https://formsubmit.co/hr@gatewaysi.com" method="POST" className="space-y-6">
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_next" value="https://gatewaysi.com/" />
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-slate-400 text-sm font-bold">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="John"
-                />
+              <div>
+                <label className="block text-sm font-semibold text-slate-800 mb-2">Full Name *</label>
+                <input type="text" name="name" required className="w-full bg-white/80 border border-amber-300/60 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" placeholder="John Doe" />
               </div>
-              <div className="space-y-2">
-                <label className="text-slate-400 text-sm font-bold">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Doe"
-                />
+              <div>
+                <label className="block text-sm font-semibold text-slate-800 mb-2">Email Address *</label>
+                <input type="email" name="email" required className="w-full bg-white/80 border border-amber-300/60 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" placeholder="john@company.com" />
               </div>
             </div>
-
-            <div className="space-y-2">
-              <label className="text-slate-400 text-sm font-bold">
-                Email Address
-              </label>
-              <input
-                type="email"
-                className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                placeholder="john@company.com"
-              />
+            <div>
+              <label className="block text-sm font-semibold text-slate-800 mb-2">How can we help you? *</label>
+              <textarea name="message" required rows="5" className="w-full bg-white/80 border border-amber-300/60 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors resize-none" placeholder="Briefly describe your project or staffing needs..."></textarea>
             </div>
-
-            <div className="space-y-2">
-              <label className="text-slate-400 text-sm font-bold">
-                Message
-              </label>
-              <textarea
-                rows="5"
-                className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
-                placeholder="How can we help you?"
-              ></textarea>
-            </div>
-
-            <button
-              type="submit"
-              className="flex items-center justify-center w-full md:w-auto px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-500 transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]"
-            >
-              <Send className="w-5 h-5 mr-2" /> Send Message
+            <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold text-lg py-4 rounded-xl transition-all shadow-lg flex items-center justify-center group">
+              Submit Inquiry <Send className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
           </form>
+        </motion.div>
+
+        <motion.div className="lg:col-span-2 space-y-6">
+          {locations.map((loc, idx) => (
+            <div key={idx} className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl relative overflow-hidden group">
+              <Building className="absolute -right-6 -bottom-6 w-32 h-32 text-amber-200/40 pointer-events-none" />
+              <h3 className="text-xl font-bold text-slate-900 mb-1 relative z-10">{loc.title}</h3>
+              <p className="text-amber-700 text-sm font-bold mb-6 relative z-10">{loc.state}</p>
+              <div className="space-y-4 relative z-10">
+                <div className="flex items-start"><MapPin className="w-5 h-5 text-amber-600 mr-3 mt-0.5 flex-shrink-0" /><span className="text-slate-700 text-sm font-medium">{loc.address}</span></div>
+                <div className="flex items-center"><Phone className="w-5 h-5 text-amber-600 mr-3 flex-shrink-0" /><span className="text-slate-700 text-sm font-medium">{loc.phone}</span></div>
+                <div className="flex items-center"><Printer className="w-5 h-5 text-amber-600 mr-3 flex-shrink-0" /><span className="text-slate-700 text-sm font-medium">Fax: {loc.fax}</span></div>
+                <div className="flex items-center"><Mail className="w-5 h-5 text-amber-600 mr-3 flex-shrink-0" /><a href={`mailto:${loc.email}`} className="text-amber-700 text-sm font-bold hover:underline">{loc.email}</a></div>
+              </div>
+            </div>
+          ))}
         </motion.div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 import { motion } from 'framer-motion';
-import { CheckCircle2, MonitorSmartphone, Database, Briefcase, Landmark, Users, Cpu, ShieldCheck } from 'lucide-react';
+import { MonitorSmartphone, Database, Landmark, Users, Cpu, ShieldCheck } from 'lucide-react';
 
 export default function PortfolioPage() {
   const caseStudies = [
@@ -15,8 +15,8 @@ export default function PortfolioPage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-20 mt-12">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
-        <h1 className="text-5xl font-bold text-slate-900 mb-6">Consulting <span className="text-blue-600">Portfolio</span></h1>
-        <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-medium">
+        <h1 className="text-5xl font-bold text-slate-900 mb-6">Consulting <span className="text-amber-600">Portfolio</span></h1>
+        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed font-medium">
           Showcasing our proven track record of deploying elite IT talent and delivering robust enterprise solutions for Fortune 1000 companies and State Government agencies across the nation.
         </p>
       </motion.div>
@@ -30,21 +30,21 @@ export default function PortfolioPage() {
               initial={{ opacity: 0, y: 30 }} 
               whileInView={{ opacity: 1, y: 0 }} 
               viewport={{ once: true }}
-              className="bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-xl hover:border-blue-500/50 transition-all duration-500 flex flex-col h-full group"
+              className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl transition-all duration-500 flex flex-col h-full group"
             >
               <div className="flex items-center justify-between mb-6">
-                <div className="bg-blue-900/30 w-14 h-14 rounded-2xl flex items-center justify-center border border-blue-800/50 group-hover:scale-110 transition-transform">
-                  <Icon className="w-7 h-7 text-blue-400" />
+                <div className="bg-amber-100 w-14 h-14 rounded-2xl flex items-center justify-center border border-amber-300/60">
+                  <Icon className="w-7 h-7 text-amber-600" />
                 </div>
-                <span className="text-xs font-bold text-blue-300 bg-blue-950/50 px-3 py-1 rounded-full border border-blue-900/50">
+                <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3 py-1 rounded-full border border-amber-300/60">
                   {study.client}
                 </span>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-4">{study.title}</h2>
-              <p className="text-slate-300 mb-8 leading-relaxed flex-grow text-sm">{study.desc}</p>
-              <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-800">
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">{study.title}</h2>
+              <p className="text-slate-700 mb-8 leading-relaxed flex-grow text-sm font-medium">{study.desc}</p>
+              <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-amber-200/60">
                 {study.tags.map((tag, i) => (
-                  <span key={i} className="bg-slate-800 text-slate-200 text-xs px-3 py-1.5 rounded-full border border-slate-700 font-semibold">
+                  <span key={i} className="bg-amber-100/80 text-amber-900 text-xs px-3 py-1.5 rounded-full border border-amber-300/60 font-semibold">
                     {tag}
                   </span>
                 ))}

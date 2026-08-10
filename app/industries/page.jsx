@@ -17,8 +17,8 @@ export default function IndustriesPage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-20 mt-12">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-6">Industries <span className="text-blue-600">Served</span></h1>
-        <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-medium">
+        <h1 className="text-5xl font-extrabold text-slate-900 mb-6">Industries <span className="text-amber-600">Served</span></h1>
+        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed font-medium">
           Gateway Solutions supports a broad industrial spectrum, deploying top-tier IT consultants to multi-national private enterprises and government entities at every level.
         </p>
       </motion.div>
@@ -32,13 +32,13 @@ export default function IndustriesPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-slate-900 p-8 rounded-3xl border border-slate-800 hover:border-blue-500/50 transition-all duration-300 group text-center flex flex-col items-center h-full shadow-xl"
+              className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 transition-all duration-300 group text-center flex flex-col items-center h-full shadow-xl"
             >
-              <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-6 border border-slate-700 group-hover:border-blue-500 group-hover:bg-blue-900/30 transition-all">
-                <Icon className="w-8 h-8 text-blue-400" />
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-6 border border-amber-300/60 group-hover:bg-amber-200 transition-all">
+                <Icon className="w-8 h-8 text-amber-600" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-3">{ind.title}</h3>
-              <p className="text-slate-300 text-sm leading-relaxed">{ind.desc}</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-3">{ind.title}</h3>
+              <p className="text-slate-700 text-sm leading-relaxed font-medium">{ind.desc}</p>
             </motion.div>
           )
         })}

@@ -18,8 +18,8 @@ export default function ServicesPage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-20 mt-12">
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
-        <h1 className="text-5xl font-bold text-slate-900 mb-6">Enterprise <span className="text-blue-600">Capabilities</span></h1>
-        <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-medium">
+        <h1 className="text-5xl font-bold text-slate-900 mb-6">Enterprise <span className="text-amber-600">Capabilities</span></h1>
+        <p className="text-xl text-slate-700 max-w-4xl mx-auto leading-relaxed font-medium">
           From Artificial Intelligence to legacy system modernization, Gateway Solutions maintains a deep, actively vetted bench of top-tier IT professionals ready to deploy across every major technology vertical in the market.
         </p>
       </motion.div>
@@ -32,14 +32,14 @@ export default function ServicesPage() {
               key={idx}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.1 }}
-              className="group bg-slate-900 p-8 rounded-3xl border border-slate-800 hover:border-blue-500/50 shadow-xl transition-all duration-300 flex flex-col h-full"
+              transition={{ delay: idx * 0.05 }}
+              className="group bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl transition-all duration-300 flex flex-col h-full"
             >
-              <div className="w-14 h-14 bg-blue-900/30 rounded-2xl flex items-center justify-center mb-6 border border-blue-800/50 group-hover:scale-110 transition-all">
-                <Icon className="w-7 h-7 text-blue-400 group-hover:text-white transition-colors" />
+              <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 border border-amber-300/60 group-hover:scale-110 transition-all">
+                <Icon className="w-7 h-7 text-amber-600" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-4">{srv.title}</h3>
-              <p className="text-slate-300 leading-relaxed text-sm flex-grow">{srv.desc}</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">{srv.title}</h3>
+              <p className="text-slate-700 leading-relaxed text-sm flex-grow font-medium">{srv.desc}</p>
             </motion.div>
           )
         })}
