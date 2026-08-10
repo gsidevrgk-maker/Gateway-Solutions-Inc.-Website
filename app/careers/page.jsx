@@ -25,21 +25,26 @@ export default function CareersPage() {
 
   useEffect(() => {
     fetchJobs();
-    // Check if admin is logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-    // Listen for login/logout events
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
     return () => subscription.unsubscribe();
   }, []);
 
   async function fetchJobs() {
     setLoading(true);
-    const { data } = await supabase.from('jobs').select('*').order('created_at', { ascending: false });
-    if (data) setJobs(data);
+    const { data, error } = await supabase.from('jobs').select('*').order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error("Fetch error:", error);
+    } else if (data) {
+      // Map database lowercase columns back to React camelCase state
+      const mappedJobs = data.map(job => ({
+        ...job,
+        contactName: job.contactname || job.contactName,
+        contactEmail: job.contactemail || job.contactEmail
+      }));
+      setJobs(mappedJobs);
+    }
     setLoading(false);
   }
 
@@ -61,8 +66,8 @@ export default function CareersPage() {
       setEditingJob(job);
       setFormData({
         ...job,
-        responsibilities: job.responsibilities.join('\n'),
-        requirements: job.requirements.join('\n')
+        responsibilities: job.responsibilities ? job.responsibilities.join('\n') : '',
+        requirements: job.requirements ? job.requirements.join('\n') : ''
       });
     } else {
       setEditingJob(null);
@@ -73,18 +78,33 @@ export default function CareersPage() {
 
   async function handleSaveJob(e) {
     e.preventDefault();
-    // Convert multiline text back into arrays for the database
+    
+    // Format the payload to match Postgres strictly lowercase columns
     const jobData = {
-      ...formData,
+      title: formData.title,
+      location: formData.location,
+      type: formData.type,
+      desc: formData.desc,
       responsibilities: formData.responsibilities.split('\n').filter(line => line.trim() !== ''),
-      requirements: formData.requirements.split('\n').filter(line => line.trim() !== '')
+      requirements: formData.requirements.split('\n').filter(line => line.trim() !== ''),
+      contactname: formData.contactName,   // Mapped to lowercase for DB
+      contactemail: formData.contactEmail  // Mapped to lowercase for DB
     };
 
     if (editingJob) {
-      await supabase.from('jobs').update(jobData).eq('id', editingJob.id);
+      const { error } = await supabase.from('jobs').update(jobData).eq('id', editingJob.id);
+      if (error) {
+        alert("Failed to update: " + error.message);
+        return;
+      }
     } else {
-      await supabase.from('jobs').insert([jobData]);
+      const { error } = await supabase.from('jobs').insert([jobData]);
+      if (error) {
+        alert("Failed to save: " + error.message);
+        return;
+      }
     }
+    
     setShowForm(false);
     fetchJobs();
   }
@@ -92,8 +112,9 @@ export default function CareersPage() {
   async function handleDeleteJob(id, e) {
     e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this job posting?")) {
-      await supabase.from('jobs').delete().eq('id', id);
-      fetchJobs();
+      const { error } = await supabase.from('jobs').delete().eq('id', id);
+      if (error) alert("Failed to delete: " + error.message);
+      else fetchJobs();
     }
   }
 
@@ -114,7 +135,7 @@ export default function CareersPage() {
         <h1 className="text-5xl font-extrabold text-slate-900 mb-6 flex items-center justify-center gap-4">
           Join Our <span className="text-amber-600">Team</span>
           
-          {/* Admin Lock / Logout Icons - Highly Visible */}
+          {/* Admin Lock / Logout Icons */}
           {!session ? (
             <button onClick={() => setShowLogin(true)} className="p-3 bg-white/80 hover:bg-amber-100 rounded-full transition-colors group shadow-sm border border-slate-200 ml-2" title="Admin Login">
               <Lock className="w-6 h-6 text-slate-400 group-hover:text-amber-600 transition-colors" />
@@ -200,7 +221,7 @@ export default function CareersPage() {
                 {selectedJob.responsibilities && (<div><h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Key Responsibilities</h4><ul className="list-disc list-inside space-y-2 text-slate-700 font-medium">{selectedJob.responsibilities.map((resp, i) => <li key={i}>{resp}</li>)}</ul></div>)}
                 {selectedJob.requirements && (<div><h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Requirements</h4><ul className="list-disc list-inside space-y-2 text-slate-700 font-medium">{selectedJob.requirements.map((req, i) => <li key={i}>{req}</li>)}</ul></div>)}
 
-                {/* Apply Area - Contact Email is Hidden from Public! */}
+                {/* Apply Area */}
                 <div className="bg-white/60 p-8 rounded-3xl border border-amber-200 mt-8 shadow-sm text-center">
                   <h4 className="text-xl font-bold text-slate-900 mb-2">Ready to Join?</h4>
                   <p className="text-slate-600 font-medium mb-6">Hiring Manager: {selectedJob.contactName}</p>
