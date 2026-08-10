@@ -1,71 +1,32 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, MapPin, Clock, X, Mail, ChevronRight, User } from 'lucide-react';
+import { Briefcase, MapPin, Clock, X, Mail, ChevronRight, User, Loader2 } from 'lucide-react';
+import { supabase } from '../../lib/supabase'; // Import our Supabase client
 
 export default function CareersPage() {
+  const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - We will replace this with Supabase data in the next step
-  const mockJobs = [
-    {
-      id: 1,
-      title: "AI Integration Specialist",
-      location: "Overland Park, KS (Hybrid)",
-      type: "Full-Time",
-      desc: "Lead the implementation of advanced artificial intelligence models and automation tools into existing enterprise client architectures.",
-      responsibilities: [
-        "Develop and deploy machine learning models.",
-        "Integrate LLMs into enterprise workflows.",
-        "Collaborate with stakeholders to identify automation opportunities."
-      ],
-      requirements: [
-        "Strong background in Artificial Intelligence and Python.",
-        "Experience with cloud AI services (AWS/GCP).",
-        "Excellent analytical and problem-solving skills."
-      ],
-      contactName: "Sarah Jenkins",
-      contactEmail: "s.jenkins@gatewaysi.com"
-    },
-    {
-      id: 2,
-      title: "HR & Payroll Systems Engineer",
-      location: "Morrisville, NC (Remote)",
-      type: "Contract",
-      desc: "Develop and test customized web applications featuring comprehensive payroll management and automated real-time attendance tracking functionalities.",
-      responsibilities: [
-        "Architect and maintain robust payroll processing modules.",
-        "Implement leave encashment and attendance logic.",
-        "Ensure data security and compliance with state regulations."
-      ],
-      requirements: [
-        "Proven experience building HR/Payroll software.",
-        "Proficiency in React, Node.js, and SQL.",
-        "Understanding of complex enterprise HR workflows."
-      ],
-      contactName: "David Vuyyuru",
-      contactEmail: "vuyyuru@gatewaysi.com"
-    },
-    {
-      id: 3,
-      title: "Senior Cybersecurity Analyst",
-      location: "Ashburn, VA (On-Site)",
-      type: "Full-Time",
-      desc: "Deliver highly cleared cybersecurity expertise to secure vulnerable state endpoints and implement zero-trust architectures.",
-      responsibilities: [
-        "Perform active threat hunting and analytics.",
-        "Design zero-trust network protocols.",
-        "Conduct regular vulnerability assessments."
-      ],
-      requirements: [
-        "Active Security Clearance required.",
-        "CISSP or equivalent certification.",
-        "5+ years in enterprise network security."
-      ],
-      contactName: "Marcus Thorne",
-      contactEmail: "m.thorne@gatewaysi.com"
+  // Fetch jobs from Supabase on component mount
+  useEffect(() => {
+    async function fetchJobs() {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching jobs:', error);
+      } else {
+        setJobs(data);
+      }
+      setLoading(false);
     }
-  ];
+    
+    fetchJobs();
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-20 mt-12 min-h-screen">
@@ -76,37 +37,48 @@ export default function CareersPage() {
         </p>
       </motion.div>
 
-      {/* Job Cards Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {mockJobs.map((job, idx) => (
-          <motion.div 
-            key={job.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            onClick={() => setSelectedJob(job)}
-            className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl cursor-pointer group hover:scale-[1.02] transition-all duration-300 flex flex-col h-full"
-          >
-            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-6 border border-amber-300/60 group-hover:bg-amber-200 transition-colors">
-              <Briefcase className="w-6 h-6 text-amber-600" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-3">{job.title}</h3>
-            
-            <div className="space-y-2 mb-6 flex-grow">
-              <div className="flex items-center text-sm font-semibold text-amber-800">
-                <MapPin className="w-4 h-4 mr-2 text-amber-600" /> {job.location}
+      {/* Loading State */}
+      {loading ? (
+        <div className="flex justify-center items-center h-40">
+          <Loader2 className="w-10 h-10 text-amber-600 animate-spin" />
+        </div>
+      ) : jobs.length === 0 ? (
+        <div className="text-center text-slate-500 font-medium bg-amber-50/50 p-10 rounded-3xl border border-amber-200">
+          There are currently no open positions. Please check back later!
+        </div>
+      ) : (
+        /* Job Cards Grid */
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {jobs.map((job, idx) => (
+            <motion.div 
+              key={job.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              onClick={() => setSelectedJob(job)}
+              className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl cursor-pointer group hover:scale-[1.02] transition-all duration-300 flex flex-col h-full"
+            >
+              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-6 border border-amber-300/60 group-hover:bg-amber-200 transition-colors">
+                <Briefcase className="w-6 h-6 text-amber-600" />
               </div>
-              <div className="flex items-center text-sm font-semibold text-amber-800">
-                <Clock className="w-4 h-4 mr-2 text-amber-600" /> {job.type}
+              <h3 className="text-xl font-bold text-slate-900 mb-3">{job.title}</h3>
+              
+              <div className="space-y-2 mb-6 flex-grow">
+                <div className="flex items-center text-sm font-semibold text-amber-800">
+                  <MapPin className="w-4 h-4 mr-2 text-amber-600" /> {job.location}
+                </div>
+                <div className="flex items-center text-sm font-semibold text-amber-800">
+                  <Clock className="w-4 h-4 mr-2 text-amber-600" /> {job.type}
+                </div>
               </div>
-            </div>
-            
-            <button className="flex items-center text-amber-700 font-bold text-sm group-hover:text-amber-600 transition-colors mt-auto pt-4 border-t border-amber-200/60">
-              View Details <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </motion.div>
-        ))}
-      </div>
+              
+              <button className="flex items-center text-amber-700 font-bold text-sm group-hover:text-amber-600 transition-colors mt-auto pt-4 border-t border-amber-200/60">
+                View Details <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* Modal / Dialogue Box */}
       <AnimatePresence>
@@ -117,13 +89,8 @@ export default function CareersPage() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
           >
-            {/* Dark overlay background */}
-            <div 
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
-              onClick={() => setSelectedJob(null)}
-            />
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setSelectedJob(null)} />
             
-            {/* Modal Content - Golden Glassmorphism */}
             <motion.div 
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -154,25 +121,30 @@ export default function CareersPage() {
                   <p className="text-slate-700 leading-relaxed font-medium">{selectedJob.desc}</p>
                 </div>
 
-                <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Key Responsibilities</h4>
-                  <ul className="list-disc list-inside space-y-2 text-slate-700 font-medium">
-                    {selectedJob.responsibilities.map((resp, i) => (
-                      <li key={i}>{resp}</li>
-                    ))}
-                  </ul>
-                </div>
+                {/* Optional Arrays check for safety */}
+                {selectedJob.responsibilities && selectedJob.responsibilities.length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Key Responsibilities</h4>
+                    <ul className="list-disc list-inside space-y-2 text-slate-700 font-medium">
+                      {selectedJob.responsibilities.map((resp, i) => (
+                        <li key={i}>{resp}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-                <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Requirements</h4>
-                  <ul className="list-disc list-inside space-y-2 text-slate-700 font-medium">
-                    {selectedJob.requirements.map((req, i) => (
-                      <li key={i}>{req}</li>
-                    ))}
-                  </ul>
-                </div>
+                {selectedJob.requirements && selectedJob.requirements.length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Requirements</h4>
+                    <ul className="list-disc list-inside space-y-2 text-slate-700 font-medium">
+                      {selectedJob.requirements.map((req, i) => (
+                        <li key={i}>{req}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-                <div className="bg-white/60 p-6 rounded-2xl border border-amber-200 mt-8">
+                <div className="bg-white/60 p-6 rounded-2xl border border-amber-200 mt-8 shadow-sm">
                   <h4 className="text-lg font-bold text-slate-900 mb-4">Contact Hiring Manager</h4>
                   <div className="space-y-3">
                     <div className="flex items-center text-slate-700 font-medium">
