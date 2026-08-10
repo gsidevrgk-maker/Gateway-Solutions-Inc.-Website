@@ -146,19 +146,21 @@ export default function CareersPage() {
       const publicKey = 'L_4sEBwSjARFZtehc';
 
       const templateParams = {
-        hiring_manager: job.contactName,
+        hiring_manager: job.contactName || job.contactname || "Hiring Manager",
         job_title: job.title,
         applicant_name: user.user_metadata.full_name || "Applicant",
         applicant_email: user.email,
-        to_email: job.contactEmail // The hidden manager email stored in Supabase
+        to_email: job.contactEmail || job.contactemail
       };
+
+      console.log("Sending EmailJS payload:", templateParams);
 
       await emailjs.send(serviceID, templateID, templateParams, publicKey);
       
       alert(`Success! Your application for ${job.title} has been securely sent to the hiring manager.`);
     } catch (error) {
       console.error("Failed to send application:", error);
-      alert("There was an issue sending your application. Please try again.");
+      alert("There was an issue sending your application. Please check the console for details.");
     } finally {
       localStorage.removeItem('pendingApplication');
       await supabase.auth.signOut();
@@ -260,7 +262,7 @@ export default function CareersPage() {
                 {/* Apply Area */}
                 <div className="bg-white/60 p-8 rounded-3xl border border-amber-200 mt-8 shadow-sm text-center">
                   <h4 className="text-xl font-bold text-slate-900 mb-2">Ready to Join?</h4>
-                  <p className="text-slate-600 font-medium mb-6">Hiring Manager: {selectedJob.contactName}</p>
+                  <p className="text-slate-600 font-medium mb-6">Hiring Manager: {selectedJob.contactName || selectedJob.contactname}</p>
                   <button onClick={handleApplyWithGoogle} className="w-full sm:w-auto mx-auto flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:scale-105">
                     <Mail className="w-5 h-5 mr-3" /> Apply with Gmail Oauth
                   </button>
