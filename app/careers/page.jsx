@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, MapPin, Clock, X, ChevronRight, Loader2, Lock, LogOut, Edit, Trash2, Plus, Mail, Upload } from 'lucide-react';
+import { Briefcase, MapPin, Clock, X, ChevronRight, Loader2, Lock, LogOut, Edit, Trash2, Plus, Mail, Upload, Phone, Globe, FileText, IdentificationCard } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import emailjs from '@emailjs/browser';
 
@@ -16,15 +16,17 @@ export default function CareersPage() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   
-  // Job Form State
+  // Job Form State (Updated with new fields)
   const [showForm, setShowForm] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [formData, setFormData] = useState({
-    title: '', location: '', type: 'Full-Time', desc: '', 
-    responsibilities: '', requirements: '', contactName: '', contactEmail: ''
+    title: '', location: '', type: 'Full-Time', locals: 'All', taxStatus: 'W2', visaStatus: 'Open', 
+    desc: '', responsibilities: '', requirements: '', contactName: '', contactEmail: ''
   });
 
-  // Application State
+  // Application State (Updated with email and phone)
+  const [applicantEmail, setApplicantEmail] = useState('');
+  const [applicantPhone, setApplicantPhone] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,18 +35,24 @@ export default function CareersPage() {
     
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session?.user?.email) {
+        setApplicantEmail(session.user.email); // Pre-fill email from Google Auth
+      }
       
-      // If candidate just returned from Google OAuth, reopen their selected job modal
       const pendingJobStr = localStorage.getItem('pendingApplication');
       if (session && session.user && pendingJobStr) {
         if (session.user.app_metadata.provider === 'google') {
           setSelectedJob(JSON.parse(pendingJobStr));
-          localStorage.removeItem('pendingApplication'); // Clear it so it doesn't loop
+          localStorage.removeItem('pendingApplication'); 
         }
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user?.email) setApplicantEmail(session.user.email);
+    });
+    
     return () => subscription.unsubscribe();
   }, []);
 
@@ -76,10 +84,17 @@ export default function CareersPage() {
   function openForm(job = null) {
     if (job) {
       setEditingJob(job);
-      setFormData({ ...job, responsibilities: job.responsibilities?.join('\n') || '', requirements: job.requirements?.join('\n') || '' });
+      setFormData({ 
+        ...job, 
+        locals: job.locals || 'All',
+        taxStatus: job.tax_status || 'W2',
+        visaStatus: job.visa_status || 'Open',
+        responsibilities: job.responsibilities?.join('\n') || '', 
+        requirements: job.requirements?.join('\n') || '' 
+      });
     } else {
       setEditingJob(null);
-      setFormData({ title: '', location: '', type: 'Full-Time', desc: '', responsibilities: '', requirements: '', contactName: '', contactEmail: '' });
+      setFormData({ title: '', location: '', type: 'Full-Time', locals: 'All', taxStatus: 'W2', visaStatus: 'Open', desc: '', responsibilities: '', requirements: '', contactName: '', contactEmail: '' });
     }
     setShowForm(true);
   }
@@ -87,7 +102,9 @@ export default function CareersPage() {
   async function handleSaveJob(e) {
     e.preventDefault();
     const jobData = {
-      title: formData.title, location: formData.location, type: formData.type, desc: formData.desc,
+      title: formData.title, location: formData.location, type: formData.type, 
+      locals: formData.locals, tax_status: formData.taxStatus, visa_status: formData.visaStatus,
+      desc: formData.desc,
       responsibilities: formData.responsibilities.split('\n').filter(line => line.trim() !== ''),
       requirements: formData.requirements.split('\n').filter(line => line.trim() !== ''),
       contactname: formData.contactName, contactemail: formData.contactEmail
@@ -131,27 +148,25 @@ export default function CareersPage() {
       alert("Please select a resume to upload.");
       return;
     }
+    if (!applicantPhone || !applicantEmail) {
+      alert("Please provide both email and phone number.");
+      return;
+    }
     
     setIsSubmitting(true);
     try {
       const user = session.user;
 
-      // 1. Upload Resume to Supabase Storage
+      // 1. Upload Resume
       const fileExt = resumeFile.name.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('resumes')
-        .upload(fileName, resumeFile);
-        
+      const { error: uploadError } = await supabase.storage.from('resumes').upload(fileName, resumeFile);
       if (uploadError) throw uploadError;
 
-      // 2. Get the secure Public URL for the Email
-      const { data: { publicUrl } } = supabase.storage
-        .from('resumes')
-        .getPublicUrl(fileName);
+      // 2. Get URL
+      const { data: { publicUrl } } = supabase.storage.from('resumes').getPublicUrl(fileName);
 
-      // 3. Send Payload to EmailJS including the URL
+      // 3. Send EmailJS Payload (Includes new phone & custom email fields)
       const serviceID = 'service_kae19xl'; 
       const templateID = 'template_avqlh';
       const publicKey = 'L_4sEBwSjARFZtehc';
@@ -160,9 +175,10 @@ export default function CareersPage() {
         hiring_manager: selectedJob.contactName || selectedJob.contactname || "Hiring Manager",
         job_title: selectedJob.title,
         applicant_name: user.user_metadata.full_name || "Applicant",
-        applicant_email: user.email,
+        applicant_email: applicantEmail, 
+        applicant_phone: applicantPhone,
         to_email: selectedJob.contactEmail || selectedJob.contactemail,
-        resume_link: publicUrl // Passes the Supabase URL to EmailJS
+        resume_link: publicUrl
       };
 
       await emailjs.send(serviceID, templateID, templateParams, publicKey);
@@ -170,6 +186,7 @@ export default function CareersPage() {
       alert(`Success! Your application and resume for ${selectedJob.title} have been securely sent.`);
       setSelectedJob(null);
       setResumeFile(null);
+      setApplicantPhone('');
     } catch (error) {
       console.error("Failed to submit:", error);
       alert("There was an issue submitting your application. Please check the console for details.");
@@ -236,7 +253,6 @@ export default function CareersPage() {
                 </div>
               )}
 
-              {/* Flex container for Icon + Title Side-by-Side */}
               <div className="flex items-center gap-4 mb-4 pr-12">
                 <div className="w-12 h-12 shrink-0 bg-amber-100 rounded-xl flex items-center justify-center border border-amber-300/60 group-hover:bg-amber-200 transition-colors">
                   <Briefcase className="w-6 h-6 text-amber-600" />
@@ -262,13 +278,18 @@ export default function CareersPage() {
         {selectedJob && !showForm && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setSelectedJob(null)} />
-            <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="bg-gradient-to-br from-amber-50/95 via-yellow-50/90 to-amber-100/95 backdrop-blur-xl border border-amber-300/60 shadow-2xl rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 p-8 sm:p-10">
+            <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="bg-gradient-to-br from-amber-50/95 via-yellow-50/90 to-amber-100/95 backdrop-blur-xl border border-amber-300/60 shadow-2xl rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative z-10 p-8 sm:p-10">
               <button onClick={() => setSelectedJob(null)} className="absolute top-6 right-6 p-2 bg-amber-200/50 hover:bg-amber-300/50 rounded-full text-amber-900 transition-colors"><X className="w-6 h-6" /></button>
 
               <h2 className="text-3xl font-black text-slate-900 mb-4 pr-10">{selectedJob.title}</h2>
-              <div className="flex flex-wrap gap-4 mb-8">
-                <span className="flex items-center text-sm font-bold text-amber-900 bg-amber-200/50 px-3 py-1.5 rounded-full border border-amber-300/60"><MapPin className="w-4 h-4 mr-1.5 text-amber-700" /> {selectedJob.location}</span>
-                <span className="flex items-center text-sm font-bold text-amber-900 bg-amber-200/50 px-3 py-1.5 rounded-full border border-amber-300/60"><Clock className="w-4 h-4 mr-1.5 text-amber-700" /> {selectedJob.type}</span>
+              
+              {/* Detailed Badges Row */}
+              <div className="flex flex-wrap gap-3 mb-8">
+                <span className="flex items-center text-xs font-bold text-amber-900 bg-amber-200/50 px-3 py-1.5 rounded-full border border-amber-300/60"><MapPin className="w-4 h-4 mr-1 text-amber-700" /> {selectedJob.location}</span>
+                <span className="flex items-center text-xs font-bold text-amber-900 bg-amber-200/50 px-3 py-1.5 rounded-full border border-amber-300/60"><Clock className="w-4 h-4 mr-1 text-amber-700" /> {selectedJob.type}</span>
+                {selectedJob.locals && <span className="flex items-center text-xs font-bold text-amber-900 bg-amber-200/50 px-3 py-1.5 rounded-full border border-amber-300/60"><Globe className="w-4 h-4 mr-1 text-amber-700" /> {selectedJob.locals}</span>}
+                {selectedJob.tax_status && <span className="flex items-center text-xs font-bold text-amber-900 bg-amber-200/50 px-3 py-1.5 rounded-full border border-amber-300/60"><FileText className="w-4 h-4 mr-1 text-amber-700" /> {selectedJob.tax_status}</span>}
+                {selectedJob.visa_status && <span className="flex items-center text-xs font-bold text-amber-900 bg-amber-200/50 px-3 py-1.5 rounded-full border border-amber-300/60"><IdentificationCard className="w-4 h-4 mr-1 text-amber-700" /> {selectedJob.visa_status}</span>}
               </div>
 
               <div className="space-y-8">
@@ -281,25 +302,45 @@ export default function CareersPage() {
                   <h4 className="text-xl font-bold text-slate-900 mb-2">Ready to Join?</h4>
                   <p className="text-slate-600 leading-tight font-medium mb-6">Hiring Manager: {selectedJob.contactName || selectedJob.contactname}</p>
                   
-                  {/* Step 1: Login if not authenticated as an applicant */}
                   {!session || session?.user?.app_metadata?.provider !== 'google' ? (
                     <button onClick={handleApplyWithGoogle} className="w-full sm:w-auto mx-auto flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:scale-105">
                       <Mail className="w-5 h-5 mr-3" /> Step 1: Sign in with Gmail
                     </button>
                   ) : (
-                    /* Step 2: Upload Resume & Submit */
-                    <form onSubmit={processApplication} className="max-w-md mx-auto space-y-5">
-                      <div className="text-left bg-amber-50/50 p-4 rounded-2xl border border-amber-200">
-                        <label className="block text-sm font-bold text-slate-700 mb-3 flex items-center">
-                          <Upload className="w-4 h-4 mr-2 text-amber-600" /> Upload Resume (PDF, DOC)
-                        </label>
-                        <input 
-                          type="file" 
-                          required 
-                          accept=".pdf,.doc,.docx"
-                          onChange={(e) => setResumeFile(e.target.files[0])}
-                          className="w-full text-sm text-slate-700 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-amber-600 file:text-white hover:file:bg-amber-500 cursor-pointer"
-                        />
+                    /* Step 2: Form Upload */
+                    <form onSubmit={processApplication} className="max-w-lg mx-auto space-y-5">
+                      <div className="text-left bg-amber-50/70 p-5 rounded-2xl border border-amber-200 space-y-4 shadow-sm">
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center">
+                              <Mail className="w-4 h-4 mr-1.5 text-amber-600" /> Confirm Email
+                            </label>
+                            <input 
+                              type="email" required value={applicantEmail} onChange={(e) => setApplicantEmail(e.target.value)}
+                              className="w-full p-2.5 bg-white border border-amber-200 rounded-xl text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center">
+                              <Phone className="w-4 h-4 mr-1.5 text-amber-600" /> Phone Number
+                            </label>
+                            <input 
+                              type="tel" required placeholder="(555) 123-4567" value={applicantPhone} onChange={(e) => setApplicantPhone(e.target.value)}
+                              className="w-full p-2.5 bg-white border border-amber-200 rounded-xl text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="pt-2">
+                          <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center">
+                            <Upload className="w-4 h-4 mr-1.5 text-amber-600" /> Upload Resume (PDF, DOC)
+                          </label>
+                          <input 
+                            type="file" required accept=".pdf,.doc,.docx" onChange={(e) => setResumeFile(e.target.files[0])}
+                            className="w-full text-sm text-slate-700 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-amber-600 file:text-white hover:file:bg-amber-500 cursor-pointer"
+                          />
+                        </div>
                       </div>
                       
                       <button disabled={isSubmitting} type="submit" className="w-full flex items-center justify-center bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(22,163,74,0.3)] hover:scale-105 disabled:opacity-50 disabled:hover:scale-100">
@@ -316,25 +357,10 @@ export default function CareersPage() {
         )}
       </AnimatePresence>
 
-      {/* --- ADMIN LOGIN MODAL --- */}
-      {showLogin && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm relative">
-            <button onClick={() => setShowLogin(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"><X className="w-5 h-5" /></button>
-            <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center"><Lock className="w-6 h-6 mr-2 text-amber-600"/> Admin Access</h2>
-            <form onSubmit={handleAdminLogin} className="space-y-4">
-              <input type="email" required placeholder="Admin Email" value={loginEmail} onChange={(e)=>setLoginEmail(e.target.value)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl" />
-              <input type="password" required placeholder="Password" value={loginPassword} onChange={(e)=>setLoginPassword(e.target.value)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl" />
-              <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-amber-600 transition">Login</button>
-            </form>
-          </motion.div>
-        </div>
-      )}
-
       {/* --- ADMIN JOB FORM MODAL (Add/Edit) --- */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-3xl relative my-auto">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-4xl relative my-auto">
             <button onClick={() => setShowForm(false)} className="absolute top-6 right-6 text-slate-400 hover:text-slate-900"><X className="w-6 h-6" /></button>
             <h2 className="text-3xl font-bold text-slate-900 mb-6">{editingJob ? "Edit Job Posting" : "Post New Job"}</h2>
             
@@ -342,6 +368,45 @@ export default function CareersPage() {
               <div className="grid md:grid-cols-2 gap-4">
                 <div><label className="text-sm font-bold text-slate-700">Job Title</label><input required type="text" value={formData.title} onChange={e=>setFormData({...formData, title: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl" /></div>
                 <div><label className="text-sm font-bold text-slate-700">Location</label><input required type="text" value={formData.location} onChange={e=>setFormData({...formData, location: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl" placeholder="e.g. Remote, KS" /></div>
+              </div>
+
+              {/* NEW DROPDOWNS SECTION */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 uppercase">Job Type</label>
+                  <select value={formData.type} onChange={e=>setFormData({...formData, type: e.target.value})} className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg text-sm cursor-pointer">
+                    <option value="Full-Time">Full-Time</option>
+                    <option value="Contract">Contract</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 uppercase">Locals</label>
+                  <select value={formData.locals} onChange={e=>setFormData({...formData, locals: e.target.value})} className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg text-sm cursor-pointer">
+                    <option value="All">All</option>
+                    <option value="Locals">Locals</option>
+                    <option value="Non Locals">Non Locals</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 uppercase">Tax Status</label>
+                  <select value={formData.taxStatus} onChange={e=>setFormData({...formData, taxStatus: e.target.value})} className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg text-sm cursor-pointer">
+                    <option value="C2C">C2C</option>
+                    <option value="W2">W2</option>
+                    <option value="1099">1099</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 uppercase">Visa Status</label>
+                  <select value={formData.visaStatus} onChange={e=>setFormData({...formData, visaStatus: e.target.value})} className="w-full mt-1 p-2 bg-white border border-slate-200 rounded-lg text-sm cursor-pointer">
+                    <option value="Open">Open</option>
+                    <option value="H1B">H1B</option>
+                    <option value="OPT EAD">OPT EAD</option>
+                    <option value="GC">GC</option>
+                    <option value="USC">USC</option>
+                    <option value="H4-EAD">H4-EAD</option>
+                    <option value="CPT">CPT</option>
+                  </select>
+                </div>
               </div>
               
               <div><label className="text-sm font-bold text-slate-700">Job Description</label><textarea required rows="3" value={formData.desc} onChange={e=>setFormData({...formData, desc: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl"></textarea></div>
