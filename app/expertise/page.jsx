@@ -1,59 +1,84 @@
 "use client";
 import { motion } from 'framer-motion';
-import { Cloud, Cpu, Database, ShieldAlert, Settings, Smartphone, Layers, Code } from 'lucide-react';
+import { Cloud, Cpu, AppWindow, BarChart, Shield, Server } from 'lucide-react';
 
 export default function ExpertisePage() {
-  const techMatrix = [
-    { icon: Cloud, title: "Cloud & Infrastructure", desc: "Scalable, highly available environments built for enterprise demands.", tags: ["AWS", "Azure", "GCP", "Kubernetes", "Docker", "Terraform"] },
-    { icon: Cpu, title: "Artificial Intelligence & ML", desc: "Advanced algorithmic models driving predictive insights and automation.", tags: ["Python", "TensorFlow", "PyTorch", "OpenAI APIs", "Machine Learning"] },
-    { icon: Code, title: "Modern Frontend & UI/UX", desc: "High-performance, accessible, and responsive user interfaces.", tags: ["React.js", "Next.js", "Angular", "Vue.js", "Tailwind CSS"] },
-    { icon: Settings, title: "Backend & Middleware", desc: "Robust microservices and event-driven architectures.", tags: ["Node.js", "Java / Spring Boot", ".NET Core", "C#", "Python"] },
-    { icon: Database, title: "Data Engineering & Analytics", desc: "Massive data pipelines, warehousing, and business intelligence.", tags: ["Snowflake", "Databricks", "Informatica", "Oracle 11g/19c", "SQL Server"] },
-    { icon: ShieldAlert, title: "Cybersecurity & InfoSec", desc: "Zero-trust implementations and rigorous vulnerability management.", tags: ["Zero Trust", "IAM", "CyberArk", "Splunk", "Penetration Testing"] },
-    { icon: Layers, title: "ERP, CRM & Enterprise Apps", desc: "Seamless integration and customization of global business systems.", tags: ["SAP S/4HANA", "Salesforce", "Oracle ERP", "Workday"] },
-    { icon: Smartphone, title: "Mobile Development", desc: "Native and cross-platform applications for a mobile-first workforce.", tags: ["React Native", "Flutter", "Swift (iOS)", "Kotlin (Android)"] }
+  const expertiseAreas = [
+    {
+      icon: <Cloud className="w-6 h-6 text-amber-600" />,
+      title: "Cloud & Infrastructure",
+      desc: "Expertise in AWS, Azure, and Google Cloud Platform. We architect scalable, secure, and highly available environments for enterprise workloads."
+    },
+    {
+      icon: <Cpu className="w-6 h-6 text-amber-600" />,
+      title: "Artificial Intelligence & ML",
+      desc: "Deploying intelligent solutions using advanced ML models, predictive analytics, and automated workflows to drive data-backed decisions."
+    },
+    {
+      icon: <AppWindow className="w-6 h-6 text-amber-600" />,
+      title: "Enterprise Applications",
+      desc: "Full-stack proficiency in modern frameworks (React, Node.js, Java Spring). Delivering robust web applications and microservices architectures."
+    },
+    {
+      icon: <BarChart className="w-6 h-6 text-amber-600" />,
+      title: "Data Analytics & BI",
+      desc: "Harnessing the power of big data processing and analytics pipelines to deliver real-time, actionable business intelligence."
+    },
+    {
+      icon: <Shield className="w-6 h-6 text-amber-600" />,
+      title: "Cybersecurity",
+      desc: "Implementing zero-trust architectures, advanced threat protection, and strict compliance frameworks to secure critical enterprise assets."
+    },
+    {
+      icon: <Server className="w-6 h-6 text-amber-600" />,
+      title: "Legacy Modernization",
+      desc: "Seamlessly migrating and refactoring monolithic legacy systems into agile, cloud-native solutions without disrupting business operations."
+    }
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 mt-12">
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-6">
+    <div className="max-w-7xl mx-auto px-6 py-20 mt-12 min-h-screen relative">
+      
+      {/* --- OPTIMIZED HEADER SECTION --- */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="text-center mb-8 relative"
+      >
+        <h1 className="text-5xl font-extrabold text-slate-900 mb-3 flex items-center justify-center gap-4">
           Technology <span className="text-amber-600">Matrix</span>
         </h1>
-        <p className="text-xl text-slate-700 max-w-4xl mx-auto leading-relaxed font-medium">
+        
+        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-tight font-medium">
           Our talent acquisition and technical vetting protocols are mapped directly to the modern technology landscape. We deploy specialists who possess deep, tactical expertise across these critical enterprise domains.
         </p>
       </motion.div>
 
-      <div className="grid md:grid-cols-2 gap-8 mb-24">
-        {techMatrix.map((domain, idx) => {
-          const Icon = domain.icon;
-          return (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl shadow-xl border border-amber-300/60 transition-all duration-300 group flex flex-col h-full"
-            >
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center border border-amber-300/60 transition-transform mr-4">
-                  <Icon className="w-6 h-6 text-amber-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900">{domain.title}</h3>
+      {/* --- EXPERTISE GRID --- */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {expertiseAreas.map((item, idx) => (
+          <motion.div 
+            key={idx} 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: idx * 0.1 }}
+            className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl group hover:scale-[1.02] transition-all duration-300"
+          >
+            {/* Flex container for Icon + Title Side-by-Side */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 shrink-0 bg-amber-100 rounded-xl flex items-center justify-center border border-amber-300/60 group-hover:bg-amber-200 transition-colors">
+                {item.icon}
               </div>
-              <p className="text-slate-700 text-sm mb-6 flex-grow font-medium">{domain.desc}</p>
-              <div className="flex flex-wrap gap-2">
-                {domain.tags.map((tag, i) => (
-                  <span key={i} className="bg-amber-100/80 text-amber-900 text-xs font-semibold px-3 py-1.5 rounded-md border border-amber-300/60">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          )
-        })}
+              <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
+            </div>
+            
+            <p className="text-slate-700 leading-tight font-medium">
+              {item.desc}
+            </p>
+          </motion.div>
+        ))}
       </div>
+
     </div>
   );
 }
