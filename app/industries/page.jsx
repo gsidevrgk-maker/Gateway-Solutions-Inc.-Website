@@ -1,48 +1,84 @@
 "use client";
 import { motion } from 'framer-motion';
-import { Landmark, HeartPulse, Building2, Wifi, MonitorPlay, ShieldCheck, ShoppingCart, CreditCard } from 'lucide-react';
+import { Stethoscope, Landmark, ShoppingCart, Factory, Smartphone, Zap } from 'lucide-react';
 
 export default function IndustriesPage() {
   const industries = [
-    { icon: Landmark, title: "Public Sector & Government", desc: "Delivering cleared talent and IT solutions for State, Local, and Federal agencies." },
-    { icon: HeartPulse, title: "Healthcare & Pharmaceutical", desc: "Providing compliant data systems and IT staffing for major medical and pharma enterprises." },
-    { icon: CreditCard, title: "Finance & Insurance", desc: "Deploying secure fintech, data warehousing, and banking software analysts." },
-    { icon: Wifi, title: "Telecommunications", desc: "Supporting network administration and high-bandwidth infrastructure overhauls." },
-    { icon: ShoppingCart, title: "Consumer Products & E-Commerce", desc: "Building scalable retail platforms and seamless digital payment integrations." },
-    { icon: MonitorPlay, title: "Entertainment & Media", desc: "Empowering content delivery networks and interactive web platforms." },
-    { icon: Building2, title: "Manufacturing & Logistics", desc: "Streamlining ERP integrations and supply chain data management." },
-    { icon: ShieldCheck, title: "Data Networking & Hosting", desc: "Ensuring 24x7 global support and world-class data center management." }
+    {
+      icon: <Stethoscope className="w-6 h-6 text-amber-600" />,
+      title: "Healthcare & Life Sciences",
+      desc: "Secure, HIPAA-compliant data systems, telehealth platforms, and predictive analytics that improve patient outcomes and operational efficiency."
+    },
+    {
+      icon: <Landmark className="w-6 h-6 text-amber-600" />,
+      title: "Banking & Financial Services",
+      desc: "Robust fintech applications, fraud detection models, and secure transaction processing architectures built for high-stakes regulatory environments."
+    },
+    {
+      icon: <ShoppingCart className="w-6 h-6 text-amber-600" />,
+      title: "Retail & E-Commerce",
+      desc: "Scalable digital storefronts, supply chain automation, and personalized customer experience platforms driven by AI and real-time data."
+    },
+    {
+      icon: <Factory className="w-6 h-6 text-amber-600" />,
+      title: "Manufacturing & Logistics",
+      desc: "IoT integrations, predictive maintenance algorithms, and end-to-end supply chain visibility tools to streamline global operations."
+    },
+    {
+      icon: <Smartphone className="w-6 h-6 text-amber-600" />,
+      title: "Telecommunications",
+      desc: "High-availability network management tools, billing solutions, and modern CRM systems to support massive subscriber bases."
+    },
+    {
+      icon: <Zap className="w-6 h-6 text-amber-600" />,
+      title: "Energy & Utilities",
+      desc: "Smart grid analytics, resource management platforms, and legacy system modernization to drive sustainable and efficient energy delivery."
+    }
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 mt-12">
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-6">Industries <span className="text-amber-600">Served</span></h1>
-        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed font-medium">
-          Gateway Solutions supports a broad industrial spectrum, deploying top-tier IT consultants to multi-national private enterprises and government entities at every level.
+    <div className="max-w-7xl mx-auto px-6 py-20 mt-12 min-h-screen relative">
+      
+      {/* --- OPTIMIZED HEADER SECTION --- */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="text-center mb-8 relative"
+      >
+        <h1 className="text-5xl font-extrabold text-slate-900 mb-3 flex items-center justify-center gap-4">
+          Industries We <span className="text-amber-600">Serve</span>
+        </h1>
+        
+        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-tight font-medium">
+          We deliver tailored, enterprise-grade technology solutions designed to meet the unique regulatory, operational, and scaling demands of key global industries.
         </p>
       </motion.div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {industries.map((ind, idx) => {
-          const Icon = ind.icon;
-          return (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 transition-all duration-300 group text-center flex flex-col items-center h-full shadow-xl"
-            >
-              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-6 border border-amber-300/60 group-hover:bg-amber-200 transition-all">
-                <Icon className="w-8 h-8 text-amber-600" />
+      {/* --- INDUSTRIES GRID --- */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {industries.map((industry, idx) => (
+          <motion.div 
+            key={idx} 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: idx * 0.1 }}
+            className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl group hover:scale-[1.02] transition-all duration-300"
+          >
+            {/* Flex container for Icon + Title Side-by-Side */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 shrink-0 bg-amber-100 rounded-xl flex items-center justify-center border border-amber-300/60 group-hover:bg-amber-200 transition-colors">
+                {industry.icon}
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-3">{ind.title}</h3>
-              <p className="text-slate-700 text-sm leading-relaxed font-medium">{ind.desc}</p>
-            </motion.div>
-          )
-        })}
+              <h3 className="text-xl font-bold text-slate-900">{industry.title}</h3>
+            </div>
+            
+            <p className="text-slate-700 leading-tight font-medium">
+              {industry.desc}
+            </p>
+          </motion.div>
+        ))}
       </div>
+
     </div>
   );
 }
