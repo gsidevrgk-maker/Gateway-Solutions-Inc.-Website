@@ -37,19 +37,22 @@ export default function ExpertisePage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 mt-12 min-h-screen relative">
+    /* Increased top padding (pt-32) to clear the navbar on mobile */
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-20 min-h-screen relative">
       
-      {/* --- OPTIMIZED HEADER SECTION --- */}
+      {/* --- OPTIMIZED RESPONSIVE HEADER SECTION --- */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }} 
         animate={{ opacity: 1, y: 0 }} 
-        className="text-center mb-8 relative"
+        className="text-center mb-10 md:mb-12 relative px-2"
       >
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-3 flex items-center justify-center gap-4">
+        {/* Changed to flex-wrap and responsive text sizes (text-3xl md:text-5xl) */}
+        <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 flex flex-wrap items-center justify-center gap-2 md:gap-4">
           Technology <span className="text-amber-600">Matrix</span>
         </h1>
         
-        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-tight font-medium">
+        {/* Adjusted mobile text size and line height */}
+        <p className="text-base md:text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed md:leading-tight font-medium">
           Our talent acquisition and technical vetting protocols are mapped directly to the modern technology landscape. We deploy specialists who possess deep, tactical expertise across these critical enterprise domains.
         </p>
       </motion.div>
@@ -62,7 +65,8 @@ export default function ExpertisePage() {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: idx * 0.1 }}
-            className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl group hover:scale-[1.02] transition-all duration-300"
+            /* Adjusted card padding for mobile (p-6 md:p-8) */
+            className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-amber-300/60 shadow-xl group hover:scale-[1.02] transition-all duration-300"
           >
             {/* Flex container for Icon + Title Side-by-Side */}
             <div className="flex items-center gap-4 mb-4">

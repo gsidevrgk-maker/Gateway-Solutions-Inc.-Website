@@ -27,19 +27,22 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 mt-12 min-h-screen relative">
+    /* Increased top padding (pt-32) to clear the navbar on mobile */
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-20 min-h-screen relative">
       
-      {/* --- OPTIMIZED HEADER SECTION --- */}
+      {/* --- OPTIMIZED RESPONSIVE HEADER SECTION --- */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }} 
         animate={{ opacity: 1, y: 0 }} 
-        className="text-center mb-8 relative"
+        className="text-center mb-10 md:mb-12 relative px-2"
       >
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-3 flex items-center justify-center gap-4">
+        {/* Changed to flex-wrap and responsive text sizes (text-3xl md:text-5xl) */}
+        <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 flex flex-wrap items-center justify-center gap-2 md:gap-4">
           Pioneering Software <span className="text-amber-600">Solutions</span>
         </h1>
         
-        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-tight font-medium">
+        {/* Adjusted mobile text size and line height */}
+        <p className="text-base md:text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed md:leading-tight font-medium">
           Gateway Solutions, Inc. is a leading software and business solutions company providing a full complementary range of multi-disciplinary solutions. Powered by a strong, qualified workforce updated in par with cutting edge technologies.
         </p>
       </motion.div>
@@ -49,16 +52,16 @@ export default function AboutPage() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1 }}
-        className="flex flex-wrap justify-center gap-6 mb-12"
+        className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-12"
       >
-        <div className="flex items-center text-sm font-bold text-amber-900 bg-amber-200/50 px-5 py-2.5 rounded-full border border-amber-300/60 shadow-sm">
-          <MapPin className="w-4 h-4 mr-2 text-amber-700" /> Overland Park, KS (HQ)
+        <div className="flex items-center text-xs sm:text-sm font-bold text-amber-900 bg-amber-200/50 px-4 sm:px-5 py-2.5 rounded-full border border-amber-300/60 shadow-sm">
+          <MapPin className="w-4 h-4 mr-1.5 sm:mr-2 text-amber-700 shrink-0" /> Overland Park, KS (HQ)
         </div>
-        <div className="flex items-center text-sm font-bold text-amber-900 bg-amber-200/50 px-5 py-2.5 rounded-full border border-amber-300/60 shadow-sm">
-          <MapPin className="w-4 h-4 mr-2 text-amber-700" /> Ashburn, VA
+        <div className="flex items-center text-xs sm:text-sm font-bold text-amber-900 bg-amber-200/50 px-4 sm:px-5 py-2.5 rounded-full border border-amber-300/60 shadow-sm">
+          <MapPin className="w-4 h-4 mr-1.5 sm:mr-2 text-amber-700 shrink-0" /> Ashburn, VA
         </div>
-        <div className="flex items-center text-sm font-bold text-amber-900 bg-amber-200/50 px-5 py-2.5 rounded-full border border-amber-300/60 shadow-sm">
-          <MapPin className="w-4 h-4 mr-2 text-amber-700" /> Morrisville, NC
+        <div className="flex items-center text-xs sm:text-sm font-bold text-amber-900 bg-amber-200/50 px-4 sm:px-5 py-2.5 rounded-full border border-amber-300/60 shadow-sm">
+          <MapPin className="w-4 h-4 mr-1.5 sm:mr-2 text-amber-700 shrink-0" /> Morrisville, NC
         </div>
       </motion.div>
 
@@ -70,7 +73,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: idx * 0.1 + 0.2 }}
-            className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl group hover:scale-[1.02] transition-all duration-300"
+            className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-amber-300/60 shadow-xl group hover:scale-[1.02] transition-all duration-300"
           >
             {/* Flex container to place Icon and Title side-by-side */}
             <div className="flex items-center gap-4 mb-4">
