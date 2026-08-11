@@ -1,53 +1,61 @@
 "use client";
 import { motion } from 'framer-motion';
-import { ShieldCheck, Award, MapPin } from 'lucide-react';
+import { MapPin, ArrowRight, Award, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-32 pb-20 relative overflow-hidden">
+    <div className="max-w-7xl mx-auto px-6 py-20 mt-12 min-h-screen flex flex-col items-center relative">
       
-      {/* Translucent Shining Golden Glassmorphism Card */}
+      {/* --- OPTIMIZED HERO HEADER SECTION --- */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }} 
+        initial={{ opacity: 0, y: -20 }} 
         animate={{ opacity: 1, y: 0 }} 
-        className="max-w-5xl mx-auto bg-gradient-to-br from-amber-50/70 via-yellow-100/40 to-amber-200/50 backdrop-blur-md p-8 md:p-14 rounded-3xl shadow-[0_0_50px_rgba(245,158,11,0.25)] border border-amber-300/60 relative z-10"
+        className="text-center mb-8 relative w-full max-w-4xl"
       >
-        {/* Badges */}
+        {/* ISO and CMM Badges */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <span className="flex items-center text-xs font-bold text-amber-900 bg-amber-100/80 backdrop-blur-sm px-4 py-2 rounded-full border border-amber-300/60 shadow-sm">
-            <Award className="w-4 h-4 mr-2 text-amber-600" /> ISO 9001: 2000 Conformance
-          </span>
-          <span className="flex items-center text-xs font-bold text-amber-900 bg-amber-100/80 backdrop-blur-sm px-4 py-2 rounded-full border border-amber-300/60 shadow-sm">
-            <ShieldCheck className="w-4 h-4 mr-2 text-amber-600" /> CMM Level 4 Implementation
-          </span>
+           <span className="bg-amber-100/80 backdrop-blur-sm text-amber-900 font-bold px-5 py-2.5 rounded-full border border-amber-300/60 shadow-sm text-sm flex items-center">
+             <Award className="w-4 h-4 mr-2 text-amber-600" /> ISO 9001:2000 Conformance
+           </span>
+           <span className="bg-amber-100/80 backdrop-blur-sm text-amber-900 font-bold px-5 py-2.5 rounded-full border border-amber-300/60 shadow-sm text-sm flex items-center">
+             <CheckCircle className="w-4 h-4 mr-2 text-amber-600" /> CMM Level 4 Implementation
+           </span>
         </div>
 
-        {/* Hero Headline */}
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 mb-6 tracking-tight">
-          Pioneering <span className="text-amber-600">Software</span><br/>Solutions.
+        {/* Updated Heading */}
+        <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 mb-4 tracking-tight flex flex-col items-center justify-center gap-2">
+          Pioneering IT Hiring <span className="text-amber-600">Solutions</span>
         </h1>
-
-        {/* Hero Subtitle */}
-        <p className="text-base md:text-lg text-slate-700 max-w-3xl mx-auto leading-relaxed mb-8 font-medium">
-          Gateway Solutions, Inc. is a leading software and business solutions company providing a full complementary range of multi-disciplinary solutions through a 24x7 Global service model. Powered by a strong, qualified workforce updated in par with cutting edge technologies.
+        
+        {/* Updated Description with Bold Company Name and 1.25 Line Spacing */}
+        <p className="text-xl text-slate-700 mx-auto leading-tight font-medium mb-10 max-w-3xl">
+          <strong className="font-extrabold text-slate-900">Gateway Solutions, Inc.</strong> is a leading software and business solutions company providing a full complementary range of multi-disciplinary solutions through a 24x7 Global service model. Powered by a strong, qualified workforce updated in par with cutting edge technologies.
         </p>
 
-        {/* Location Tags */}
-        <div className="flex flex-wrap justify-center gap-6 mb-10 text-sm font-semibold text-slate-700">
-          <span className="flex items-center bg-amber-100/60 backdrop-blur-sm px-3 py-1.5 rounded-full border border-amber-200"><MapPin className="w-4 h-4 mr-1 text-amber-600" /> Overland Park, KS (HQ)</span>
-          <span className="flex items-center bg-amber-100/60 backdrop-blur-sm px-3 py-1.5 rounded-full border border-amber-200"><MapPin className="w-4 h-4 mr-1 text-amber-600" /> Ashburn, VA</span>
-          <span className="flex items-center bg-amber-100/60 backdrop-blur-sm px-3 py-1.5 rounded-full border border-amber-200"><MapPin className="w-4 h-4 mr-1 text-amber-600" /> Morrisville, NC</span>
+        {/* Call to Action Buttons */}
+        <div className="flex justify-center gap-6">
+            <Link href="/services" className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 px-8 rounded-full transition-all shadow-lg hover:scale-105 flex items-center">
+                Explore Our Services <ArrowRight className="w-5 h-5 ml-2" />
+            </Link>
         </div>
+      </motion.div>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link href="/services" className="bg-amber-600 text-white hover:bg-amber-500 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-105">
-            Explore Our Services
-          </Link>
-          <Link href="/about" className="bg-white/80 backdrop-blur-sm text-slate-800 hover:bg-white border-2 border-amber-300 px-8 py-4 rounded-full font-bold text-lg transition-all hover:scale-105 shadow-sm">
-            Our Methodology
-          </Link>
+      {/* --- LOCATIONS SECTION --- */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="flex flex-wrap justify-center gap-6 mt-8"
+      >
+        <div className="flex items-center text-sm font-bold text-amber-900 bg-amber-50/80 px-5 py-2.5 rounded-full border border-amber-200">
+          <MapPin className="w-4 h-4 mr-2 text-amber-600" /> Overland Park, KS (HQ)
+        </div>
+        <div className="flex items-center text-sm font-bold text-amber-900 bg-amber-50/80 px-5 py-2.5 rounded-full border border-amber-200">
+          <MapPin className="w-4 h-4 mr-2 text-amber-600" /> Ashburn, VA
+        </div>
+        <div className="flex items-center text-sm font-bold text-amber-900 bg-amber-50/80 px-5 py-2.5 rounded-full border border-amber-200">
+          <MapPin className="w-4 h-4 mr-2 text-amber-600" /> Morrisville, NC
         </div>
       </motion.div>
 
