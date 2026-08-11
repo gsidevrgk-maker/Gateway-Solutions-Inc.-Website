@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Fixed the icon import here: Changed IdentificationCard to IdCard
 import { Briefcase, MapPin, Clock, X, ChevronRight, Loader2, Lock, LogOut, Edit, Trash2, Plus, Mail, Upload, Phone, Globe, FileText, IdCard } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import emailjs from '@emailjs/browser';
@@ -277,14 +276,15 @@ export default function CareersPage() {
       {/* --- PUBLIC JOB DETAILS MODAL --- */}
       <AnimatePresence>
         {selectedJob && !showForm && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          /* OPTIMIZATION: Switched to items-start and added pt-28 md:pt-32 to force modal below the Navbar */
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[9999] flex items-start justify-center p-4 sm:p-6 pt-28 md:pt-32">
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setSelectedJob(null)} />
-            <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="bg-gradient-to-br from-amber-50/95 via-yellow-50/90 to-amber-100/95 backdrop-blur-xl border border-amber-300/60 shadow-2xl rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative z-10 p-8 sm:p-10">
+            {/* OPTIMIZATION: max-h adjusted so scrolling stays safely inside the visible card area */}
+            <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="bg-gradient-to-br from-amber-50/95 via-yellow-50/90 to-amber-100/95 backdrop-blur-xl border border-amber-300/60 shadow-2xl rounded-3xl w-full max-w-3xl max-h-[calc(100vh-8rem)] overflow-y-auto relative z-10 p-8 sm:p-10 mb-8">
               <button onClick={() => setSelectedJob(null)} className="absolute top-6 right-6 p-2 bg-amber-200/50 hover:bg-amber-300/50 rounded-full text-amber-900 transition-colors"><X className="w-6 h-6" /></button>
 
               <h2 className="text-3xl font-black text-slate-900 mb-4 pr-10">{selectedJob.title}</h2>
               
-              {/* Detailed Badges Row (Replaced IdentificationCard with IdCard) */}
               <div className="flex flex-wrap gap-3 mb-8">
                 <span className="flex items-center text-xs font-bold text-amber-900 bg-amber-200/50 px-3 py-1.5 rounded-full border border-amber-300/60"><MapPin className="w-4 h-4 mr-1 text-amber-700" /> {selectedJob.location}</span>
                 <span className="flex items-center text-xs font-bold text-amber-900 bg-amber-200/50 px-3 py-1.5 rounded-full border border-amber-300/60"><Clock className="w-4 h-4 mr-1 text-amber-700" /> {selectedJob.type}</span>
@@ -308,7 +308,6 @@ export default function CareersPage() {
                       <Mail className="w-5 h-5 mr-3" /> Step 1: Sign in with Gmail
                     </button>
                   ) : (
-                    /* Step 2: Form Upload */
                     <form onSubmit={processApplication} className="max-w-lg mx-auto space-y-5">
                       <div className="text-left bg-amber-50/70 p-5 rounded-2xl border border-amber-200 space-y-4 shadow-sm">
                         
@@ -360,7 +359,7 @@ export default function CareersPage() {
 
       {/* --- ADMIN LOGIN MODAL --- */}
       {showLogin && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-28 md:pt-32 bg-slate-900/60 backdrop-blur-sm">
           <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm relative">
             <button onClick={() => setShowLogin(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"><X className="w-5 h-5" /></button>
             <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center"><Lock className="w-6 h-6 mr-2 text-amber-600"/> Admin Access</h2>
@@ -375,8 +374,8 @@ export default function CareersPage() {
 
       {/* --- ADMIN JOB FORM MODAL (Add/Edit) --- */}
       {showForm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-4xl relative my-auto">
+        <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 sm:p-6 pt-28 md:pt-32 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-4xl relative mb-10">
             <button onClick={() => setShowForm(false)} className="absolute top-6 right-6 text-slate-400 hover:text-slate-900"><X className="w-6 h-6" /></button>
             <h2 className="text-3xl font-bold text-slate-900 mb-6">{editingJob ? "Edit Job Posting" : "Post New Job"}</h2>
             
