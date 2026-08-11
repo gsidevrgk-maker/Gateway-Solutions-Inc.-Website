@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, MapPin, Clock, X, ChevronRight, User, Loader2, Lock, LogOut, Edit, Trash2, Plus, Mail } from 'lucide-react';
+import { Briefcase, MapPin, Clock, X, ChevronRight, Loader2, Lock, LogOut, Edit, Trash2, Plus, Mail, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import emailjs from '@emailjs/browser';
 
@@ -24,17 +24,22 @@ export default function CareersPage() {
     responsibilities: '', requirements: '', contactName: '', contactEmail: ''
   });
 
+  // Application State
+  const [resumeFile, setResumeFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     fetchJobs();
     
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       
-      // Check if candidate just returned from Google OAuth login with a pending application
+      // If candidate just returned from Google OAuth, reopen their selected job modal
       const pendingJobStr = localStorage.getItem('pendingApplication');
       if (session && session.user && pendingJobStr) {
         if (session.user.app_metadata.provider === 'google') {
-          processApplication(session.user, JSON.parse(pendingJobStr));
+          setSelectedJob(JSON.parse(pendingJobStr));
+          localStorage.removeItem('pendingApplication'); // Clear it so it doesn't loop
         }
       }
     });
@@ -46,14 +51,9 @@ export default function CareersPage() {
   async function fetchJobs() {
     setLoading(true);
     const { data, error } = await supabase.from('jobs').select('*').order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error("Fetch error:", error);
-    } else if (data) {
+    if (!error && data) {
       const mappedJobs = data.map(job => ({
-        ...job,
-        contactName: job.contactname || job.contactName,
-        contactEmail: job.contactemail || job.contactEmail
+        ...job, contactName: job.contactname || job.contactName, contactEmail: job.contactemail || job.contactEmail
       }));
       setJobs(mappedJobs);
     }
@@ -76,11 +76,7 @@ export default function CareersPage() {
   function openForm(job = null) {
     if (job) {
       setEditingJob(job);
-      setFormData({
-        ...job,
-        responsibilities: job.responsibilities ? job.responsibilities.join('\n') : '',
-        requirements: job.requirements ? job.requirements.join('\n') : ''
-      });
+      setFormData({ ...job, responsibilities: job.responsibilities?.join('\n') || '', requirements: job.requirements?.join('\n') || '' });
     } else {
       setEditingJob(null);
       setFormData({ title: '', location: '', type: 'Full-Time', desc: '', responsibilities: '', requirements: '', contactName: '', contactEmail: '' });
@@ -90,26 +86,20 @@ export default function CareersPage() {
 
   async function handleSaveJob(e) {
     e.preventDefault();
-    
     const jobData = {
-      title: formData.title,
-      location: formData.location,
-      type: formData.type,
-      desc: formData.desc,
+      title: formData.title, location: formData.location, type: formData.type, desc: formData.desc,
       responsibilities: formData.responsibilities.split('\n').filter(line => line.trim() !== ''),
       requirements: formData.requirements.split('\n').filter(line => line.trim() !== ''),
-      contactname: formData.contactName,
-      contactemail: formData.contactEmail
+      contactname: formData.contactName, contactemail: formData.contactEmail
     };
 
     if (editingJob) {
       const { error } = await supabase.from('jobs').update(jobData).eq('id', editingJob.id);
-      if (error) { alert("Failed to update: " + error.message); return; }
+      if (error) alert("Failed to update: " + error.message);
     } else {
       const { error } = await supabase.from('jobs').insert([jobData]);
-      if (error) { alert("Failed to save: " + error.message); return; }
+      if (error) alert("Failed to save: " + error.message);
     }
-    
     setShowForm(false);
     fetchJobs();
   }
@@ -117,63 +107,87 @@ export default function CareersPage() {
   async function handleDeleteJob(id, e) {
     e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this job posting?")) {
-      const { error } = await supabase.from('jobs').delete().eq('id', id);
-      if (error) alert("Failed to delete: " + error.message);
-      else fetchJobs();
+      await supabase.from('jobs').delete().eq('id', id);
+      fetchJobs();
     }
   }
 
   // --- PUBLIC APPLY FLOW VIA GOOGLE OAUTH ---
   async function handleApplyWithGoogle() {
     localStorage.setItem('pendingApplication', JSON.stringify(selectedJob));
-    
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/careers` }
+      provider: 'google', options: { redirectTo: `${window.location.origin}/careers` }
     });
-    
     if (error) {
       alert("Error connecting to Google.");
       localStorage.removeItem('pendingApplication');
     }
   }
 
-  // --- AUTOMATED EMAIL DISPATCH VIA EMAILJS ---
-  async function processApplication(user, job) {
+  // --- AUTOMATED UPLOAD & EMAIL DISPATCH ---
+  async function processApplication(e) {
+    e.preventDefault();
+    if (!resumeFile) {
+      alert("Please select a resume to upload.");
+      return;
+    }
+    
+    setIsSubmitting(true);
     try {
-      const serviceID = 'service_kae19xl';
-      const templateID = 'template_avqlhuc';
+      const user = session.user;
+
+      // 1. Upload Resume to Supabase Storage
+      const fileExt = resumeFile.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('resumes')
+        .upload(fileName, resumeFile);
+        
+      if (uploadError) throw uploadError;
+
+      // 2. Get the secure Public URL for the Email
+      const { data: { publicUrl } } = supabase.storage
+        .from('resumes')
+        .getPublicUrl(fileName);
+
+      // 3. Send Payload to EmailJS including the URL
+      const serviceID = 'service_kae19xl'; 
+      const templateID = 'template_avqlh';
       const publicKey = 'L_4sEBwSjARFZtehc';
 
       const templateParams = {
-        hiring_manager: job.contactName || job.contactname || "Hiring Manager",
-        job_title: job.title,
+        hiring_manager: selectedJob.contactName || selectedJob.contactname || "Hiring Manager",
+        job_title: selectedJob.title,
         applicant_name: user.user_metadata.full_name || "Applicant",
         applicant_email: user.email,
-        to_email: job.contactEmail || job.contactemail
+        to_email: selectedJob.contactEmail || selectedJob.contactemail,
+        resume_link: publicUrl // Passes the Supabase URL to EmailJS
       };
-
-      console.log("Sending EmailJS payload:", templateParams);
 
       await emailjs.send(serviceID, templateID, templateParams, publicKey);
       
-      alert(`Success! Your application for ${job.title} has been securely sent to the hiring manager.`);
-    } catch (error) {
-      console.error("Failed to send application:", error);
-      alert("There was an issue sending your application. Please check the console for details.");
-    } finally {
-      localStorage.removeItem('pendingApplication');
-      await supabase.auth.signOut();
+      alert(`Success! Your application and resume for ${selectedJob.title} have been securely sent.`);
       setSelectedJob(null);
+      setResumeFile(null);
+    } catch (error) {
+      console.error("Failed to submit:", error);
+      alert("There was an issue submitting your application. Please check the console for details.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-20 mt-12 min-h-screen relative">
       
-      {/* Header & Admin Toggle */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16 relative">
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-6 flex items-center justify-center gap-4">
+      {/* --- OPTIMIZED HEADER SECTION --- */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="text-center mb-8 relative"
+      >
+        <h1 className="text-5xl font-extrabold text-slate-900 mb-3 flex items-center justify-center gap-4">
           Join Our <span className="text-amber-600">Team</span>
           
           {!session ? (
@@ -186,11 +200,12 @@ export default function CareersPage() {
             </button>
           )}
         </h1>
-        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed font-medium">
+        
+        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-tight font-medium">
           Gateway Solutions is always looking for elite talent. Explore our open positions and become part of a workforce that drives enterprise technology forward.
         </p>
 
-        {session && (
+        {session && session.user.app_metadata.provider !== 'google' && (
           <motion.button 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             onClick={() => openForm()}
@@ -201,13 +216,12 @@ export default function CareersPage() {
         )}
       </motion.div>
 
-      {/* Loading State */}
+      {/* --- JOBS GRID --- */}
       {loading ? (
         <div className="flex justify-center items-center h-40"><Loader2 className="w-10 h-10 text-amber-600 animate-spin" /></div>
       ) : jobs.length === 0 ? (
         <div className="text-center text-slate-500 font-medium bg-amber-50/50 p-10 rounded-3xl border border-amber-200">No open positions currently available.</div>
       ) : (
-        /* Job Cards Grid */
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {jobs.map((job, idx) => (
             <motion.div 
@@ -215,17 +229,20 @@ export default function CareersPage() {
               onClick={() => setSelectedJob(job)}
               className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl cursor-pointer group hover:scale-[1.02] transition-all duration-300 flex flex-col h-full relative"
             >
-              {session && (
+              {session && session.user.app_metadata.provider !== 'google' && (
                 <div className="absolute top-4 right-4 flex gap-2 z-10">
                   <button onClick={(e) => { e.stopPropagation(); openForm(job); }} className="p-2 bg-white/60 hover:bg-white rounded-full text-blue-600 shadow-sm transition"><Edit className="w-4 h-4" /></button>
                   <button onClick={(e) => handleDeleteJob(job.id, e)} className="p-2 bg-white/60 hover:bg-red-100 rounded-full text-red-600 shadow-sm transition"><Trash2 className="w-4 h-4" /></button>
                 </div>
               )}
 
-              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-6 border border-amber-300/60 group-hover:bg-amber-200 transition-colors">
-                <Briefcase className="w-6 h-6 text-amber-600" />
+              {/* Flex container for Icon + Title Side-by-Side */}
+              <div className="flex items-center gap-4 mb-4 pr-12">
+                <div className="w-12 h-12 shrink-0 bg-amber-100 rounded-xl flex items-center justify-center border border-amber-300/60 group-hover:bg-amber-200 transition-colors">
+                  <Briefcase className="w-6 h-6 text-amber-600" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">{job.title}</h3>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3 pr-12">{job.title}</h3>
               
               <div className="space-y-2 mb-6 flex-grow">
                 <div className="flex items-center text-sm font-semibold text-amber-800"><MapPin className="w-4 h-4 mr-2 text-amber-600" /> {job.location}</div>
@@ -255,18 +272,43 @@ export default function CareersPage() {
               </div>
 
               <div className="space-y-8">
-                <div><h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Job Description</h4><p className="text-slate-700 leading-relaxed font-medium">{selectedJob.desc}</p></div>
+                <div><h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Job Description</h4><p className="text-slate-700 leading-tight font-medium">{selectedJob.desc}</p></div>
                 {selectedJob.responsibilities && (<div><h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Key Responsibilities</h4><ul className="list-disc list-inside space-y-2 text-slate-700 font-medium">{selectedJob.responsibilities.map((resp, i) => <li key={i}>{resp}</li>)}</ul></div>)}
                 {selectedJob.requirements && (<div><h4 className="text-lg font-bold text-slate-900 mb-3 border-l-4 border-amber-500 pl-3">Requirements</h4><ul className="list-disc list-inside space-y-2 text-slate-700 font-medium">{selectedJob.requirements.map((req, i) => <li key={i}>{req}</li>)}</ul></div>)}
 
-                {/* Apply Area */}
+                {/* --- TWO-STEP APPLICATION AREA --- */}
                 <div className="bg-white/60 p-8 rounded-3xl border border-amber-200 mt-8 shadow-sm text-center">
                   <h4 className="text-xl font-bold text-slate-900 mb-2">Ready to Join?</h4>
-                  <p className="text-slate-600 font-medium mb-6">Hiring Manager: {selectedJob.contactName || selectedJob.contactname}</p>
-                  <button onClick={handleApplyWithGoogle} className="w-full sm:w-auto mx-auto flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:scale-105">
-                    <Mail className="w-5 h-5 mr-3" /> Apply with Gmail Oauth
-                  </button>
-                  <p className="text-xs text-slate-500 mt-4">By applying, your contact details will be securely sent directly to the hiring manager.</p>
+                  <p className="text-slate-600 leading-tight font-medium mb-6">Hiring Manager: {selectedJob.contactName || selectedJob.contactname}</p>
+                  
+                  {/* Step 1: Login if not authenticated as an applicant */}
+                  {!session || session?.user?.app_metadata?.provider !== 'google' ? (
+                    <button onClick={handleApplyWithGoogle} className="w-full sm:w-auto mx-auto flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:scale-105">
+                      <Mail className="w-5 h-5 mr-3" /> Step 1: Sign in with Gmail
+                    </button>
+                  ) : (
+                    /* Step 2: Upload Resume & Submit */
+                    <form onSubmit={processApplication} className="max-w-md mx-auto space-y-5">
+                      <div className="text-left bg-amber-50/50 p-4 rounded-2xl border border-amber-200">
+                        <label className="block text-sm font-bold text-slate-700 mb-3 flex items-center">
+                          <Upload className="w-4 h-4 mr-2 text-amber-600" /> Upload Resume (PDF, DOC)
+                        </label>
+                        <input 
+                          type="file" 
+                          required 
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => setResumeFile(e.target.files[0])}
+                          className="w-full text-sm text-slate-700 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-amber-600 file:text-white hover:file:bg-amber-500 cursor-pointer"
+                        />
+                      </div>
+                      
+                      <button disabled={isSubmitting} type="submit" className="w-full flex items-center justify-center bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(22,163,74,0.3)] hover:scale-105 disabled:opacity-50 disabled:hover:scale-100">
+                        {isSubmitting ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : null}
+                        {isSubmitting ? "Submitting Application..." : "Step 2: Submit Application"}
+                      </button>
+                    </form>
+                  )}
+                  <p className="text-xs text-slate-500 mt-5">By applying, your contact details and resume will be securely sent directly to the hiring manager.</p>
                 </div>
               </div>
             </motion.div>
@@ -305,8 +347,8 @@ export default function CareersPage() {
               <div><label className="text-sm font-bold text-slate-700">Job Description</label><textarea required rows="3" value={formData.desc} onChange={e=>setFormData({...formData, desc: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl"></textarea></div>
               
               <div className="grid md:grid-cols-2 gap-4">
-                <div><label className="text-sm font-bold text-slate-700">Responsibilities (One per line)</label><textarea required rows="4" value={formData.responsibilities} onChange={e=>setFormData({...formData, responsibilities: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" placeholder="Develop APIs...&#10;Manage databases..."></textarea></div>
-                <div><label className="text-sm font-bold text-slate-700">Requirements (One per line)</label><textarea required rows="4" value={formData.requirements} onChange={e=>setFormData({...formData, requirements: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" placeholder="3+ Years React...&#10;SQL Knowledge..."></textarea></div>
+                <div><label className="text-sm font-bold text-slate-700">Responsibilities (One per line)</label><textarea required rows="4" value={formData.responsibilities} onChange={e=>setFormData({...formData, responsibilities: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm"></textarea></div>
+                <div><label className="text-sm font-bold text-slate-700">Requirements (One per line)</label><textarea required rows="4" value={formData.requirements} onChange={e=>setFormData({...formData, requirements: e.target.value})} className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm"></textarea></div>
               </div>
 
               <div className="bg-amber-50 p-4 rounded-2xl border border-amber-200">
