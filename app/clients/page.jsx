@@ -1,6 +1,6 @@
 "use client";
 import { motion } from 'framer-motion';
-import { Landmark, Network, Building2, MapPin, Briefcase, Star, Monitor } from 'lucide-react';
+import { Landmark, Network, Building2, MapPin, Briefcase, Star } from 'lucide-react';
 
 export default function ClientsPage() {
   const clientCategories = [
@@ -16,9 +16,7 @@ export default function ClientsPage() {
         { name: "State of Arkansas", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
         { name: "State of Oregon", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
         { name: "State of Colorado", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
-        { name: "State of Georgia", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
-        { name: "Computer Aid", icon: <Monitor className="w-4 h-4 text-blue-600" /> },
-        { name: "Knowledge Services", icon: <Monitor className="w-4 h-4 text-blue-600" /> }
+        { name: "State of Georgia", icon: <MapPin className="w-4 h-4 text-amber-600" /> }
       ]
     },
     {
@@ -48,7 +46,6 @@ export default function ClientsPage() {
   ];
 
   return (
-    /* Increased max-width to 90rem to make the entire layout and cards broader */
     <div className="max-w-[90rem] mx-auto px-6 py-20 mt-12 min-h-screen relative">
       
       {/* --- OPTIMIZED HEADER SECTION --- */}
@@ -67,7 +64,6 @@ export default function ClientsPage() {
       </motion.div>
 
       {/* --- VERTICAL GLOWING CARDS GRID --- */}
-      {/* Added items-start so cards hug their content perfectly and spacing remains identical */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
         {clientCategories.map((category, idx) => (
           <motion.div 
@@ -96,7 +92,7 @@ export default function ClientsPage() {
                 {category.desc}
               </p>
 
-              {/* Attractive Frosted Icon Bullets Grid (Switched to flex-wrap for broader text) */}
+              {/* Attractive Frosted Icon Bullets Grid */}
               <div className="flex flex-wrap gap-3 mt-6">
                 {category.bullets.map((bullet, bulletIdx) => (
                   <div 
