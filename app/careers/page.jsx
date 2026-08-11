@@ -16,7 +16,7 @@ export default function CareersPage() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   
-  // Job Form State (Updated with new fields)
+  // Job Form State
   const [showForm, setShowForm] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ export default function CareersPage() {
     desc: '', responsibilities: '', requirements: '', contactName: '', contactEmail: ''
   });
 
-  // Application State (Updated with email and phone)
+  // Application State
   const [applicantEmail, setApplicantEmail] = useState('');
   const [applicantPhone, setApplicantPhone] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
@@ -36,7 +36,7 @@ export default function CareersPage() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user?.email) {
-        setApplicantEmail(session.user.email); // Pre-fill email from Google Auth
+        setApplicantEmail(session.user.email);
       }
       
       const pendingJobStr = localStorage.getItem('pendingApplication');
@@ -166,7 +166,7 @@ export default function CareersPage() {
       // 2. Get URL
       const { data: { publicUrl } } = supabase.storage.from('resumes').getPublicUrl(fileName);
 
-      // 3. Send EmailJS Payload (Includes new phone & custom email fields)
+      // 3. Send EmailJS Payload
       const serviceID = 'service_kae19xl'; 
       const templateID = 'template_avqlh';
       const publicKey = 'L_4sEBwSjARFZtehc';
@@ -276,7 +276,8 @@ export default function CareersPage() {
       {/* --- PUBLIC JOB DETAILS MODAL --- */}
       <AnimatePresence>
         {selectedJob && !showForm && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          /* Z-INDEX UPDATED TO 100 HERE */
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setSelectedJob(null)} />
             <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="bg-gradient-to-br from-amber-50/95 via-yellow-50/90 to-amber-100/95 backdrop-blur-xl border border-amber-300/60 shadow-2xl rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative z-10 p-8 sm:p-10">
               <button onClick={() => setSelectedJob(null)} className="absolute top-6 right-6 p-2 bg-amber-200/50 hover:bg-amber-300/50 rounded-full text-amber-900 transition-colors"><X className="w-6 h-6" /></button>
@@ -357,9 +358,26 @@ export default function CareersPage() {
         )}
       </AnimatePresence>
 
+      {/* --- ADMIN LOGIN MODAL --- */}
+      {showLogin && (
+        /* Z-INDEX UPDATED TO 100 HERE */
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm relative">
+            <button onClick={() => setShowLogin(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"><X className="w-5 h-5" /></button>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center"><Lock className="w-6 h-6 mr-2 text-amber-600"/> Admin Access</h2>
+            <form onSubmit={handleAdminLogin} className="space-y-4">
+              <input type="email" required placeholder="Admin Email" value={loginEmail} onChange={(e)=>setLoginEmail(e.target.value)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl" />
+              <input type="password" required placeholder="Password" value={loginPassword} onChange={(e)=>setLoginPassword(e.target.value)} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl" />
+              <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-amber-600 transition">Login</button>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
       {/* --- ADMIN JOB FORM MODAL (Add/Edit) --- */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+        /* Z-INDEX UPDATED TO 100 HERE */
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-4xl relative my-auto">
             <button onClick={() => setShowForm(false)} className="absolute top-6 right-6 text-slate-400 hover:text-slate-900"><X className="w-6 h-6" /></button>
             <h2 className="text-3xl font-bold text-slate-900 mb-6">{editingJob ? "Edit Job Posting" : "Post New Job"}</h2>
