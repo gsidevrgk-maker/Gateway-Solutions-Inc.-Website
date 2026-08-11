@@ -1,43 +1,119 @@
 "use client";
 import { motion } from 'framer-motion';
-import { Building, Landmark, Globe } from 'lucide-react';
+import { Landmark, Network, Building2, MapPin, Briefcase, Star, Monitor } from 'lucide-react';
 
 export default function ClientsPage() {
-  const clientTypes = [
-    { icon: Globe, title: "Fortune 1000 Enterprises", desc: "Supporting multi-national companies across a broad industrial spectrum including distribution, consumer goods, and manufacturing." },
-    { icon: Landmark, title: "Government Entities", desc: "Providing cleared IT talent and solutions for United States government agencies at the State, Local, and Federal levels." },
-    { icon: Building, title: "Enterprise B2B Sector", desc: "Fostering expanded relationships and tackling complex data architectures for finance, insurance, and telecommunication giants." }
+  const clientCategories = [
+    {
+      icon: <Landmark className="w-6 h-6 text-amber-600" />,
+      title: "Government & VMS",
+      desc: "We are prime vendors for state governments nationwide, providing top-tier talent through leading VMS portals.",
+      bullets: [
+        { name: "State of North Carolina", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
+        { name: "State of South Carolina", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
+        { name: "State of Virginia", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
+        { name: "State of Michigan", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
+        { name: "State of Arkansas", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
+        { name: "State of Oregon", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
+        { name: "State of Colorado", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
+        { name: "State of Georgia", icon: <MapPin className="w-4 h-4 text-amber-600" /> },
+        { name: "Computer Aid", icon: <Monitor className="w-4 h-4 text-blue-600" /> },
+        { name: "Knowledge Services", icon: <Monitor className="w-4 h-4 text-blue-600" /> }
+      ]
+    },
+    {
+      icon: <Network className="w-6 h-6 text-amber-600" />,
+      title: "Implementation Partners",
+      desc: "We successfully serve top-tier global implementation partners, providing elite technical resources directly through their prime vendors.",
+      bullets: [
+        { name: "Deloitte", icon: <Briefcase className="w-4 h-4 text-emerald-600" /> },
+        { name: "TCS", icon: <Briefcase className="w-4 h-4 text-emerald-600" /> },
+        { name: "Cognizant", icon: <Briefcase className="w-4 h-4 text-emerald-600" /> },
+        { name: "Tech Mahindra", icon: <Briefcase className="w-4 h-4 text-emerald-600" /> },
+        { name: "HCL", icon: <Briefcase className="w-4 h-4 text-emerald-600" /> },
+        { name: "Infosys", icon: <Briefcase className="w-4 h-4 text-emerald-600" /> }
+      ]
+    },
+    {
+      icon: <Building2 className="w-6 h-6 text-amber-600" />,
+      title: "Direct Enterprise Clients",
+      desc: "We deliver strategic IT staffing and customized, full-stack software solutions directly to third-party enterprise organizations.",
+      bullets: [
+        { name: "Annexus", icon: <Star className="w-4 h-4 text-amber-500" /> },
+        { name: "ICF", icon: <Star className="w-4 h-4 text-amber-500" /> },
+        { name: "McLane", icon: <Star className="w-4 h-4 text-amber-500" /> },
+        { name: "And Many More...", icon: <Star className="w-4 h-4 text-slate-400" /> }
+      ]
+    }
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 mt-12">
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
-        <h1 className="text-5xl font-bold text-slate-900 mb-6">Our <span className="text-amber-600">Clients</span></h1>
-        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed font-medium">
-          Many of our clients look to us for the intrinsic values we bring: Professionalism without pressure. Collaboration without confrontation. We respond with agility in support of their evolving requirements.
+    /* Increased max-width to 90rem to make the entire layout and cards broader */
+    <div className="max-w-[90rem] mx-auto px-6 py-20 mt-12 min-h-screen relative">
+      
+      {/* --- OPTIMIZED HEADER SECTION --- */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="text-center mb-8 relative"
+      >
+        <h1 className="text-5xl font-extrabold text-slate-900 mb-3 flex items-center justify-center gap-4">
+          Our Trusted <span className="text-amber-600">Clients</span>
+        </h1>
+        
+        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-tight font-medium">
+          We prioritize long-term, secure, and transparent partnerships. Our extensive global network spans state governments, enterprise implementation partners, and direct third-party clients.
         </p>
       </motion.div>
 
-      <div className="grid md:grid-cols-3 gap-8 mb-24">
-        {clientTypes.map((type, idx) => {
-          const Icon = type.icon;
-          return (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-10 rounded-3xl shadow-xl border border-amber-300/60 text-center flex flex-col items-center"
-            >
-              <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 border border-amber-300/60">
-                <Icon className="w-8 h-8 text-amber-600" />
+      {/* --- VERTICAL GLOWING CARDS GRID --- */}
+      {/* Added items-start so cards hug their content perfectly and spacing remains identical */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+        {clientCategories.map((category, idx) => (
+          <motion.div 
+            key={idx} 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: idx * 0.1 }}
+            className="relative w-full group"
+          >
+            {/* The Shining Glow Effect (Behind the card) */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 rounded-[2rem] blur-lg opacity-30 group-hover:opacity-60 transition duration-1000"></div>
+            
+            {/* The Glassy TRANSPARENT Foreground Vertical Card */}
+            <div className="relative bg-white/10 backdrop-blur-md border border-white/40 shadow-xl rounded-[2rem] p-8 flex flex-col">
+              
+              {/* Flex container for Icon + Title Side-by-Side */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 shrink-0 bg-white/40 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/50 shadow-sm">
+                  {category.icon}
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">{category.title}</h3>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">{type.title}</h3>
-              <p className="text-slate-700 leading-relaxed text-sm font-medium">{type.desc}</p>
-            </motion.div>
-          )
-        })}
+              
+              {/* Description with 1.25 line spacing */}
+              <p className="text-slate-800 leading-tight font-medium mb-2">
+                {category.desc}
+              </p>
+
+              {/* Attractive Frosted Icon Bullets Grid (Switched to flex-wrap for broader text) */}
+              <div className="flex flex-wrap gap-3 mt-6">
+                {category.bullets.map((bullet, bulletIdx) => (
+                  <div 
+                    key={bulletIdx} 
+                    className="flex items-center text-sm font-bold text-slate-800 bg-white/30 hover:bg-white/50 transition-colors backdrop-blur-sm px-4 py-2.5 rounded-xl border border-white/40 shadow-sm"
+                  >
+                    <span className="mr-2 shrink-0">{bullet.icon}</span>
+                    <span>{bullet.name}</span>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </motion.div>
+        ))}
       </div>
+
     </div>
   );
 }
