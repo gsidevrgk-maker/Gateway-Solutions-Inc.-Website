@@ -22,10 +22,8 @@ export default function Navbar() {
     /* Golden Transparent Background with Glassmorphism Blur */
     <nav className="fixed top-0 w-full z-40 bg-amber-400/20 backdrop-blur-md border-b border-amber-300/40 shadow-sm transition-all duration-300">
       
-      {/* Broadened Container Width */}
       <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Adjusted Navbar Height */}
         <div className="flex justify-between items-center h-20 md:h-24">
           
           {/* Logo Area */}
@@ -34,12 +32,8 @@ export default function Navbar() {
               <img 
                 src={logo.src} 
                 alt="Gateway Solutions, Inc" 
-                /* 
-                  Added contrast-125 and brightness-110. 
-                  This pushes the off-white background to pure white, 
-                  allowing mix-blend-multiply to completely erase the rectangular edges!
-                */
-                className="h-full w-auto max-w-[350px] md:max-w-[450px] object-contain mix-blend-multiply contrast-125 brightness-110" 
+                /* Removed the mix-blend-multiply and contrast filters so your new transparent logo shines */
+                className="h-full w-auto max-w-[350px] md:max-w-[450px] object-contain" 
               />
             </Link>
           </div>
