@@ -24,20 +24,22 @@ export default function Navbar() {
       
       {/* Broadened Container Width */}
       <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-24">
+        
+        {/* Adjusted Navbar Height (h-20 on mobile, h-24 on desktop) */}
+        <div className="flex justify-between items-center h-20 md:h-24">
           
           {/* Logo Area */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center">
+          <div className="flex-shrink-0 flex items-center h-full py-3">
+            <Link href="/" className="h-full flex items-center">
               <img 
                 src={logo.src} 
                 alt="Gateway Solutions, Inc" 
                 /* 
-                  mix-blend-multiply: removes the white background
-                  h-16 md:h-18: makes the logo much larger and legible
-                  py-2: adds a little breathing room 
+                  h-full: Forces the logo to be exactly as tall as the navbar (minus the py-3 padding).
+                  w-auto: Automatically expands the width to match the new, larger height perfectly.
+                  mix-blend-multiply: Keeps the background golden.
                 */
-                className="h-16 md:h-18 w-auto max-w-[280px] object-contain mix-blend-multiply py-2" 
+                className="h-full w-auto max-w-[350px] md:max-w-[450px] object-contain mix-blend-multiply" 
               />
             </Link>
           </div>
