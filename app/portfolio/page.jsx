@@ -31,25 +31,24 @@ export default function PortfolioPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 mt-12 min-h-screen relative">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-20 min-h-screen relative">
       
-      {/* --- OPTIMIZED HEADER SECTION --- */}
+      {/* --- OPTIMIZED RESPONSIVE HEADER SECTION --- */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }} 
         animate={{ opacity: 1, y: 0 }} 
-        className="text-center mb-8 relative"
+        className="text-center mb-10 md:mb-12 relative px-2"
       >
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-3 flex items-center justify-center gap-4">
+        <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 flex flex-wrap items-center justify-center gap-2 md:gap-4">
           Our Success <span className="text-amber-600">Stories</span>
         </h1>
         
-        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-tight font-medium">
+        <p className="text-base md:text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed md:leading-tight font-medium">
           Explore a selection of our most impactful enterprise projects. We deliver scalable software and strategic staffing solutions that solve complex technical challenges.
         </p>
       </motion.div>
 
       {/* --- PORTFOLIO GRID --- */}
-      {/* Using 2 columns here gives the portfolio items plenty of room to display their descriptions and tech stacks cleanly */}
       <div className="grid md:grid-cols-2 gap-8">
         {portfolioProjects.map((project, idx) => (
           <motion.div 
@@ -57,9 +56,8 @@ export default function PortfolioPage() {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: idx * 0.1 }}
-            className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-8 rounded-3xl border border-amber-300/60 shadow-xl group hover:scale-[1.02] transition-all duration-300 flex flex-col h-full"
+            className="bg-gradient-to-br from-amber-50/75 via-yellow-100/45 to-amber-200/55 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-amber-300/60 shadow-xl group hover:scale-[1.02] transition-all duration-300 flex flex-col h-full"
           >
-            {/* Flex container for Icon + Title Side-by-Side */}
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 shrink-0 bg-amber-100 rounded-xl flex items-center justify-center border border-amber-300/60 group-hover:bg-amber-200 transition-colors">
                 {project.icon}
@@ -67,12 +65,10 @@ export default function PortfolioPage() {
               <h3 className="text-xl font-bold text-slate-900">{project.title}</h3>
             </div>
             
-            {/* Description with 1.25 line spacing */}
             <p className="text-slate-700 leading-tight font-medium mb-8 flex-grow">
               {project.desc}
             </p>
 
-            {/* Tech Stack Tags at the bottom */}
             <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-amber-300/40">
               {project.tags.map((tag, tagIdx) => (
                 <span 

@@ -46,19 +46,22 @@ export default function ClientsPage() {
   ];
 
   return (
-    <div className="max-w-[90rem] mx-auto px-6 py-20 mt-12 min-h-screen relative">
+    /* Increased top padding (pt-32) to clear the navbar on mobile */
+    <div className="max-w-[90rem] mx-auto px-4 sm:px-6 pt-32 pb-20 min-h-screen relative">
       
-      {/* --- OPTIMIZED HEADER SECTION --- */}
+      {/* --- OPTIMIZED RESPONSIVE HEADER SECTION --- */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }} 
         animate={{ opacity: 1, y: 0 }} 
-        className="text-center mb-8 relative"
+        className="text-center mb-10 md:mb-12 relative px-2"
       >
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-3 flex items-center justify-center gap-4">
+        {/* Changed to flex-wrap and responsive text sizes (text-3xl md:text-5xl) */}
+        <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 flex flex-wrap items-center justify-center gap-2 md:gap-4">
           Our Trusted <span className="text-amber-600">Clients</span>
         </h1>
         
-        <p className="text-xl text-slate-700 max-w-3xl mx-auto leading-tight font-medium">
+        {/* Adjusted mobile text size and line height */}
+        <p className="text-base md:text-xl text-slate-700 max-w-3xl mx-auto leading-relaxed md:leading-tight font-medium">
           We prioritize long-term, secure, and transparent partnerships. Our extensive global network spans state governments, enterprise implementation partners, and direct third-party clients.
         </p>
       </motion.div>
@@ -73,13 +76,9 @@ export default function ClientsPage() {
             transition={{ delay: idx * 0.1 }}
             className="relative w-full group"
           >
-            {/* The Shining Glow Effect (Behind the card) */}
             <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 rounded-[2rem] blur-lg opacity-30 group-hover:opacity-60 transition duration-1000"></div>
             
-            {/* The Glassy TRANSPARENT Foreground Vertical Card */}
-            <div className="relative bg-white/10 backdrop-blur-md border border-white/40 shadow-xl rounded-[2rem] p-8 flex flex-col">
-              
-              {/* Flex container for Icon + Title Side-by-Side */}
+            <div className="relative bg-white/10 backdrop-blur-md border border-white/40 shadow-xl rounded-[2rem] p-6 md:p-8 flex flex-col">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 shrink-0 bg-white/40 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/50 shadow-sm">
                   {category.icon}
@@ -87,13 +86,11 @@ export default function ClientsPage() {
                 <h3 className="text-xl font-bold text-slate-900">{category.title}</h3>
               </div>
               
-              {/* Description with 1.25 line spacing */}
-              <p className="text-slate-800 leading-tight font-medium mb-2">
+              <p className="text-slate-800 leading-tight font-medium mb-4">
                 {category.desc}
               </p>
 
-              {/* Attractive Frosted Icon Bullets Grid */}
-              <div className="flex flex-wrap gap-3 mt-6">
+              <div className="flex flex-wrap gap-3 mt-4">
                 {category.bullets.map((bullet, bulletIdx) => (
                   <div 
                     key={bulletIdx} 
@@ -104,7 +101,6 @@ export default function ClientsPage() {
                   </div>
                 ))}
               </div>
-
             </div>
           </motion.div>
         ))}
