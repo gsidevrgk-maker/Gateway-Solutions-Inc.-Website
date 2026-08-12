@@ -19,6 +19,7 @@ export default function Navbar() {
     { name: 'CLIENTS', path: '/clients' },
     { name: 'PORTFOLIO', path: '/portfolio' },
     { name: 'CAREERS', path: '/careers' },
+    { name: 'CONTACT', path: '/contact' } // <-- Added Contact Link Here!
   ];
 
   return (
@@ -42,7 +43,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Nav Links (Hidden on Mobile) */}
-          <div className="hidden lg:flex space-x-6 xl:space-x-8 items-center">
+          <div className="hidden xl:flex space-x-6 items-center">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -59,7 +60,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Hamburger Button (Visible only on small screens) */}
-          <div className="flex lg:hidden items-center">
+          <div className="flex xl:hidden items-center">
             <button 
               onClick={() => setIsOpen(!isOpen)}
               className="text-amber-900 hover:text-amber-700 focus:outline-none p-2 bg-amber-100/50 rounded-xl backdrop-blur-sm border border-amber-200/50"
@@ -73,7 +74,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="lg:hidden absolute top-full left-0 w-full bg-amber-50/95 backdrop-blur-xl border-b border-amber-200 shadow-xl">
+        <div className="xl:hidden absolute top-full left-0 w-full bg-amber-50/95 backdrop-blur-xl border-b border-amber-200 shadow-xl">
           <div className="px-6 py-6 space-y-2 flex flex-col max-h-[80vh] overflow-y-auto">
             {navLinks.map((link) => (
               <Link
